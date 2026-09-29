@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="StockWise membership plans and the explanation services included in each.">
+  <title>StockWise &mdash; Plans & Services</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white active" href="plans.html" aria-current="page">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- Page banner -->
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">Plans &amp; Services</h1>
+        <p class="lead mb-0">What each membership plan covers, and what is in the library.</p>
+      </div>
+    </div>
+
+    <div class="container py-4" id="catalogue-search">
+      <form class="row g-2 align-items-end" action="search.html" method="get">
+        <div class="col-md-6">
+          <label for="catalogueSearch" class="form-label">Search explanations and guides</label>
+          <input type="search" class="form-control" id="catalogueSearch" name="q"
+            aria-describedby="catalogueHelp"
+            placeholder="For example: franking credits, distributions, cost base">
+          <div class="form-text" id="catalogueHelp">
+            You can search the whole library before creating an account.
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="category" class="form-label">Category</label>
+          <select class="form-select" id="category" name="category">
+            <option value="">All categories</option>
+            <option value="plans">Membership plans</option>
+            <option value="explanations">Holding explanations</option>
+            <option value="guides">Learning guides</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100" type="submit">Search</button>
+        </div>
+      </form>
+    </div>
+
+    <section class="container py-4" id="plans">
+      <h2>Membership plans</h2>
+      <p>
+        Every plan buys the same thing: explanations. Plans differ only in how many holdings we
+        cover and how often we refresh them. No plan unlocks a recommendation, because we do not
+        make any.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <caption>Comparison of the three StockWise membership plans</caption>
+          <thead class="table-light">
+            <tr>
+              <th scope="col">What you get</th>
+              <th scope="col">Free</th>
+              <th scope="col">Standard</th>
+              <th scope="col">Full</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Monthly price</th><td>$0</td><td>$9</td><td>$19</td></tr>
+            <tr><th scope="row">Holdings explained</th><td>5</td><td>30</td><td>Unlimited</td></tr>
+            <tr><th scope="row">Explanations refreshed</th><td>Monthly</td><td>Weekly</td><td>Daily</td></tr>
+            <tr><th scope="row">Distribution and dividend breakdowns</th><td>&mdash;</td><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Learning guides tied to your holdings</th><td>Summaries</td><td>Full library</td><td>Full library</td></tr>
+            <tr><th scope="row">Buy, sell or hold recommendations</th><td>Never</td><td>Never</td><td>Never</td></tr>
+            <tr>
+              <th scope="row">Choose a plan</th>
+              <td><a class="btn btn-outline-primary btn-sm" href="register.html">Start on Free</a></td>
+              <td><a class="btn btn-primary btn-sm" href="register.html">Choose Standard</a></td>
+              <td><a class="btn btn-primary btn-sm" href="register.html">Choose Full</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FAQ accordion. Real questions a visitor comparing plans is likely
+         to have, answered once rather than repeated across three plan
+         cards. A Bootstrap component: data-bs-toggle/data-bs-target on
+         each button wire up the expand/collapse, no custom JavaScript
+         needed. Only the first item starts expanded.
+         ============================================================ -->
+    <section class="container py-4" id="faq">
+      <h2 class="mb-4">Questions about plans</h2>
+      <div class="accordion" id="plansAccordion">
+
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="faqHeadingRecommend">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqRecommend" aria-expanded="true" aria-controls="faqRecommend">
+              Does a higher plan ever recommend what to buy or sell?
+            </button>
+          </h3>
+          <div id="faqRecommend" class="accordion-collapse collapse show"
+            aria-labelledby="faqHeadingRecommend" data-bs-parent="#plansAccordion">
+            <div class="accordion-body">
+              No. Every plan, including Full, only explains holdings and what has changed about them.
+              None of them ever tells you to buy, sell or hold anything &mdash; that is a financial
+              product advice service, and StockWise is not one.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="faqHeadingChange">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqChange" aria-expanded="false" aria-controls="faqChange">
+              Can I change plans, or cancel, at any time?
+            </button>
+          </h3>
+          <div id="faqChange" class="accordion-collapse collapse"
+            aria-labelledby="faqHeadingChange" data-bs-parent="#plansAccordion">
+            <div class="accordion-body">
+              Yes. Plans are billed monthly with no lock-in contract, so you can move between Free,
+              Standard and Full, or cancel outright, from your account settings at any time.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="faqHeadingData">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqData" aria-expanded="false" aria-controls="faqData">
+              What happens to my holdings data if I cancel?
+            </button>
+          </h3>
+          <div id="faqData" class="accordion-collapse collapse"
+            aria-labelledby="faqHeadingData" data-bs-parent="#plansAccordion">
+            <div class="accordion-body">
+              The list of holdings you entered is deleted from our systems once your account is closed.
+              StockWise is read-only and was never connected to a trading account, so cancelling never
+              affects any holding you actually own.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="faqHeadingHoldings">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqHoldings" aria-expanded="false" aria-controls="faqHoldings">
+              What happens once I go over my plan's holding limit?
+            </button>
+          </h3>
+          <div id="faqHoldings" class="accordion-collapse collapse"
+            aria-labelledby="faqHeadingHoldings" data-bs-parent="#plansAccordion">
+            <div class="accordion-body">
+              Your existing explanations keep updating on their normal schedule. Any holding beyond your
+              plan's limit is shown but not explained until you upgrade or remove another holding to make
+              room for it &mdash; nothing is deleted, and nothing renews or charges automatically without
+              you choosing a plan first.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="container py-4" id="services">
+      <h2 class="mb-4">What is included</h2>
+      <div class="row g-4">
+        <div class="col-lg-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/magnifier-doc.svg" class="card-img-top" alt="">
+            <div class="card-body">
+              <h3 class="card-title h5">Holding explanations</h3>
+              <p class="card-text">
+                What each company or fund does, how it earns, and what its recent announcements
+                actually said.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/change-breakdown.svg" class="card-img-top" alt="">
+            <div class="card-body">
+              <h3 class="card-title h5">Change breakdowns</h3>
+              <p class="card-text">
+                When a balance, dividend or distribution moves, a written explanation of what
+                caused it, after the fact.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/book.svg" class="card-img-top" alt="">
+            <div class="card-body">
+              <h3 class="card-title h5">Learning guides</h3>
+              <p class="card-text">
+                Short written guides that appear when the concept turns up in your own account,
+                not as a course to work through.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container pb-5" id="general-info">
+      <div class="promise p-4 rounded">
+        <h2 class="h5">About the general examples in our guides</h2>
+        <p class="mb-0">
+          Some guides describe how different mixes of assets have behaved historically. These are
+          general, educational examples about categories of investment. They are not tailored to
+          you, they are not a suggested allocation, and nothing in them takes your circumstances
+          into account.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the FAQ accordion above -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

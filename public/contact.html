@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="Contact StockWise - postal address, phone, email, working hours and query form.">
+  <title>StockWise &mdash; Contact</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white active" href="contact.html" aria-current="page">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- Page banner -->
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">Contact StockWise</h1>
+        <p class="lead mb-0">Our address, phone, email and hours, or send us a query.</p>
+      </div>
+    </div>
+
+    <div class="container py-5">
+      <div class="row g-4">
+
+        <div class="col-lg-6">
+          <h2>Contact details</h2>
+          <address class="fs-5">
+            <strong>StockWise Pty Ltd</strong><br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125<br>
+            Australia
+          </address>
+          <p class="fs-5 mb-1">Phone: <a href="tel:+61390001234">(03) 9000 1234</a></p>
+          <p class="fs-5">Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a></p>
+
+          <h3 class="h5">Working hours</h3>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <caption>StockWise support hours (AEST)</caption>
+              <thead>
+                <tr><th scope="col">Day</th><th scope="col">Hours</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Monday &ndash; Friday</td><td>9:00am &ndash; 5:00pm</td></tr>
+                <tr><td>Saturday</td><td>10:00am &ndash; 2:00pm</td></tr>
+                <tr><td>Sunday and public holidays</td><td>Closed</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <h2>Find us</h2>
+          <iframe class="w-100 rounded border" height="400" title="Map showing the StockWise office in Burwood"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=145.108%2C-37.855%2C145.126%2C-37.840&amp;layer=mapnik">
+          </iframe>
+          <p class="small mt-2">Map data &copy; OpenStreetMap contributors.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Query form. Validation is handled by js/validation.js: if a check
+         fails the form is not submitted and the messages are written into
+         the alert below, on the page itself rather than in a pop-up.
+         Every required field also carries the required attribute, so screen
+         readers are told which fields are mandatory, not only sighted users.
+         ============================================================ -->
+    <section class="bg-light py-5" id="send-query">
+      <div class="container">
+        <h2>Send us a query</h2>
+        <p>
+          We answer questions about your account and about how our explanations work. We cannot tell
+          you what to do with an investment.
+        </p>
+
+        <div class="alert alert-danger" id="formErrors" role="alert" tabindex="-1">
+          <h3 class="h6 alert-heading" id="formErrorsHeading">Please fix the following before sending:</h3>
+          <ul class="mb-0" id="formErrorList"></ul>
+        </div>
+
+        <div class="alert alert-success d-none" id="formSuccess" role="status" tabindex="-1">
+          Thank you. Your query has been saved and an administrator will review it.
+        </div>
+
+        <p>Fields marked <span class="required-marker" aria-hidden="true">*</span> are required.</p>
+
+        <form id="queryForm" novalidate>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="name" class="form-label">Name <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="name" name="name" maxlength="100" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="email" class="form-label">Email address <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="email" name="email" maxlength="254"
+                placeholder="name@example.com" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="phone" class="form-label">Phone number</label>
+              <input type="text" class="form-control" id="phone" name="phone"
+                aria-describedby="phoneHelp" placeholder="0412345678">
+              <div class="form-text" id="phoneHelp">Optional. Digits only, maximum 10.</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="query" class="form-label">Your query <span class="required-marker" aria-hidden="true">*</span></label>
+              <textarea class="form-control" id="query" name="query" rows="5" maxlength="2000" required></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send query</button>
+          <button type="reset" class="btn btn-secondary">Reset</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal on the home page -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Client-side validation for the query form -->
+  <script src="js/validation.js"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

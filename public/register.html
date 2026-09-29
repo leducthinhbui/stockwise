@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="Create a StockWise account.">
+  <title>StockWise &mdash; Register</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white active" href="register.html" aria-current="page">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- Page banner -->
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">Create your account</h1>
+        <p class="lead mb-0">We ask only what we need to explain the holdings you already have.</p>
+      </div>
+    </div>
+
+    <div class="container py-5" id="register">
+
+      <p>
+        Fields marked <span class="required-marker" aria-hidden="true">*</span> are required. Every required field also carries the HTML
+        <code>required</code> attribute, so screen readers announce it as well.
+      </p>
+
+      <form>
+
+        <fieldset class="mb-4">
+          <legend class="h5">Login details</legend>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email address <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="email" class="form-control" id="email" name="email"
+                placeholder="name@example.com" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="password" class="form-label">Password <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="password" class="form-control" id="password" name="password"
+                minlength="8" aria-describedby="passwordHelp" required>
+              <div class="form-text" id="passwordHelp">At least 8 characters.</div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="mb-4">
+          <legend class="h5">Contact details</legend>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="firstname" class="form-label">First name <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="firstname" name="firstname" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="surname" class="form-label">Surname <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="surname" name="surname" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="mobile" class="form-label">Mobile number <span class="required-marker" aria-hidden="true">*</span></label>
+              <!-- pattern + maxlength restrict entry to exactly 10 digits.
+                   aria-describedby ties the hint below to the field itself. -->
+              <input type="tel" class="form-control" id="mobile" name="mobile"
+                pattern="[0-9]{10}" maxlength="10" inputmode="numeric"
+                aria-describedby="mobileHelp" placeholder="0412345678" required>
+              <div class="form-text" id="mobileHelp">10 digits, numbers only.</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="birthdate" class="form-label">Date of birth <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="date" class="form-control" id="birthdate" name="birthdate" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="address1" class="form-label">Address <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="address1" name="address1"
+                placeholder="1234 Main St" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="city" class="form-label">City <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="state" class="form-label">State <span class="required-marker" aria-hidden="true">*</span></label>
+              <select class="form-select" id="state" name="state" required>
+                <option value="" selected>Choose&hellip;</option>
+                <option value="VIC">VIC</option>
+                <option value="NSW">NSW</option>
+                <option value="QLD">QLD</option>
+                <option value="SA">SA</option>
+                <option value="WA">WA</option>
+                <option value="TAS">TAS</option>
+                <option value="NT">NT</option>
+                <option value="ACT">ACT</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="postcode" class="form-label">Postcode <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="postcode" name="postcode"
+                pattern="[0-9]{4}" maxlength="4" inputmode="numeric"
+                aria-describedby="postcodeHelp" placeholder="3000" required>
+              <div class="form-text" id="postcodeHelp">Four digits.</div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ============================================================
+             Import your holdings (SIT774 Task 10.3HD, implementing the
+             Task 7.3HD proposal). A working prototype: a broker statement
+             (CSV or PDF) is read and parsed entirely in this browser - the
+             file is never uploaded, and StockWise never connects to a
+             trading account. Manual entry (the "Add a holding" button) and
+             import both feed the same review table below, so nothing here
+             replaces manual entry, it sits beside it, exactly as proposed.
+             ============================================================ -->
+        <fieldset class="mb-4" id="importPanel">
+          <legend class="h5">Your holdings</legend>
+          <p>
+            Add holdings by hand, or import them from a CSV or PDF statement your broker already
+            gives you. Either way, nothing is saved to your account until you review and confirm
+            it below.
+          </p>
+
+          <div class="row g-3 align-items-start mb-3">
+            <div class="col-md-6">
+              <button type="button" class="btn btn-outline-primary" id="addManualRowBtn">
+                Add a holding manually
+              </button>
+            </div>
+            <div class="col-md-6">
+              <div class="import-drop-zone border rounded p-3 text-center" id="importDropZone">
+                <p class="mb-2">
+                  <button type="button" class="btn btn-primary" id="chooseFileBtn">Choose statement file</button>
+                </p>
+                <p class="small text-body-secondary mb-0">
+                  CSV or PDF. Drag a file here instead if you prefer &ndash; the button above always
+                  works too. Read in your browser only; nothing is uploaded.
+                </p>
+                <input type="file" id="fileInputFallback" accept=".csv,.pdf,text/csv,application/pdf"
+                  class="visually-hidden" aria-hidden="true" tabindex="-1">
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress / status region (Wireframe B). aria-live="polite" so a
+               screen reader announces updates without interrupting, and
+               without being flooded on every percentage change, since
+               showProgress() is called only at meaningful steps, not on a
+               timer. -->
+          <div class="d-none" id="importProgress" role="status" aria-live="polite">
+            <div class="progress mb-2" style="height: 1.25rem;">
+              <div class="progress-bar" id="importProgressBar" role="progressbar"
+                style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p class="small mb-0" id="importProgressText"></p>
+          </div>
+
+          <!-- Review table (Wireframe C). A real, properly headed table, not
+               a div-based approximation, matching the convention already
+               used for the plan comparison table on plans.html. Rows are
+               never auto-committed: nothing here reaches the account until
+               "Save holdings" is clicked. -->
+          <div class="d-none" id="reviewSection">
+            <h3 class="h6 mt-4">Review before saving</h3>
+            <p class="small text-body-secondary" id="reviewSummary"></p>
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle table-sm">
+                <caption>Holdings found, editable before saving</caption>
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Ticker</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"><span class="visually-hidden">Remove</span></th>
+                  </tr>
+                </thead>
+                <tbody id="reviewBody"></tbody>
+              </table>
+            </div>
+            <button type="button" class="btn btn-success" id="saveHoldingsBtn">Save holdings</button>
+          </div>
+
+          <div class="alert alert-success d-none" id="holdingsSavedBanner" role="status" tabindex="-1">
+            Holdings saved. They will be included with your account once you finish and submit
+            registration below, under the same permissions you set in this form.
+          </div>
+        </fieldset>
+
+        <!-- These answers decide which explanations we show first. They are not
+             used to recommend anything, because StockWise does not make
+             recommendations. -->
+        <fieldset class="mb-4">
+          <legend class="h5">What we should explain first</legend>
+          <p class="text-body-secondary">
+            These answers only change the order in which explanations appear. They are never used to
+            suggest an investment.
+          </p>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="markets" class="form-label">Markets you already hold <span class="required-marker" aria-hidden="true">*</span></label>
+              <select class="form-select" id="markets" name="markets" size="4"
+                aria-describedby="marketsHelp" multiple required>
+                <option value="asx">Australian shares (ASX)</option>
+                <option value="us">US shares</option>
+                <option value="etf">ETFs and index funds</option>
+                <option value="lic">Listed investment companies</option>
+                <option value="bonds">Bonds and fixed income</option>
+              </select>
+              <div class="form-text" id="marketsHelp">
+                Choose one or more. Hold Ctrl, or Cmd on a Mac, to select more than one.
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="experience" class="form-label">How familiar are you with these already? <span class="required-marker" aria-hidden="true">*</span></label>
+              <!-- A list box has no placeholder option, so nothing is pre-selected
+                   and "required" genuinely blocks submission until a level is chosen. -->
+              <select class="form-select" id="experience" name="experience" size="4"
+                aria-describedby="experienceHelp" required>
+                <option value="new">New to them</option>
+                <option value="some">I hold some but never looked closely</option>
+                <option value="reading">I read my statements but not confidently</option>
+                <option value="confident">I follow them closely</option>
+              </select>
+              <div class="form-text" id="experienceHelp">Choose one option.</div>
+            </div>
+          </div>
+
+          <!-- Nested fieldset so the group's own label is announced when a
+               screen reader user tabs onto the first radio button. -->
+          <fieldset class="mb-3">
+            <legend class="h6">How much detail do you want in an explanation? <span class="required-marker" aria-hidden="true">*</span></legend>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="detail" id="detail1" value="brief" required>
+              <label class="form-check-label" for="detail1">Keep it brief</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="detail" id="detail2" value="standard">
+              <label class="form-check-label" for="detail2">Standard</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="detail" id="detail3" value="full">
+              <label class="form-check-label" for="detail3">Full detail, including the workings</label>
+            </div>
+          </fieldset>
+
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="goals" class="form-label">Anything specific you want explained first?</label>
+              <textarea class="form-control" id="goals" name="goals" rows="4"
+                aria-describedby="goalsHelp"
+                placeholder="For example: I do not understand the distribution statements from my ETF."></textarea>
+              <div class="form-text" id="goalsHelp">Optional.</div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Consent is itemised rather than bundled into one "I agree", and each
+             item says exactly what it covers. These are data and privacy
+             permissions, which is what StockWise actually needs consent for. -->
+        <fieldset class="mb-4">
+          <legend class="h5">Permissions</legend>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="holdings" name="holdings" value="yes">
+            <label class="form-check-label" for="holdings">
+              StockWise may store the list of holdings I enter, so it can explain them. Read-only:
+              StockWise is never connected to a trading account and cannot place a trade.
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="ordering" name="ordering" value="yes">
+            <label class="form-check-label" for="ordering">
+              StockWise may use my answers above to decide which explanations to show me first.
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter" value="yes">
+            <label class="form-check-label" for="newsletter">
+              Email me the monthly plain-English explainer. Optional, and separate from my account.
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="terms" name="terms" value="yes" required>
+            <label class="form-check-label" for="terms">
+              <span class="required-marker" aria-hidden="true">*</span> I understand StockWise gives factual information and general explanations only,
+              and does not tell me what to buy, sell or hold.
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="row">
+          <div class="col-md-12 my-4">
+            <button type="submit" class="btn btn-primary">Create account</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal on the home page -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- pdf.js: used only by holdings-import.js, to read PDF statements locally
+       (Task 10.3HD). A module script is deferred by default (runs after the
+       document is parsed, before DOMContentLoaded), and holdings-import.js
+       below only touches window.pdfjsLib later, inside a click handler, not
+       at load time - so it is never called before this has set it. -->
+  <script type="module">
+    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+    window.pdfjsLib = pdfjsLib;
+  </script>
+  <!-- "Import your holdings" feature (Task 10.3HD) -->
+  <script src="js/holdings-import.js"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

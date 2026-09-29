@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="StockWise explains what is happening in your share portfolio in plain English.">
+  <title>StockWise &mdash; Home</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white active" href="index.html" aria-current="page">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- Banner. Leads with the visitor's existing portfolio rather than
+         "new to investing", and carries no countdown or urgency language. -->
+    <div class="page-banner py-5">
+      <div class="container">
+        <h1 class="display-6 fw-bold">See what your portfolio is actually telling you</h1>
+        <p class="lead mb-0">
+          StockWise turns the movements in your existing share portfolio into plain English,
+          so you can understand what you already own.
+        </p>
+      </div>
+    </div>
+
+    <!-- The non-advice promise. This is the main trust argument, so it is
+         stated plainly and near the top rather than buried in the footer. -->
+    <div class="container py-4">
+      <div class="promise p-4 rounded">
+        <h2 class="h4">We explain what is happening. We never tell you what to buy or sell.</h2>
+        <p>
+          StockWise is not a broker and not a financial adviser. We do not execute trades, we do not
+          earn anything when you buy or sell, and we never rate a holding as good or bad. Our only job
+          is to translate what your portfolio and the market are doing into plain English, so the
+          decisions stay yours.
+        </p>
+        <button type="button" class="btn btn-outline-primary btn-sm mb-0"
+          data-bs-toggle="modal" data-bs-target="#adviceModal">
+          What exactly counts as advice?
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         "What counts as advice" modal, reached from the promise band above.
+         Deepens the trust argument for a visitor who wants the detail,
+         without lengthening the home page for everyone else. A Bootstrap
+         component: data-bs-toggle/data-bs-target wire it up, no custom
+         JavaScript needed.
+         ============================================================ -->
+    <div class="modal fade" id="adviceModal" tabindex="-1" aria-labelledby="adviceModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="adviceModalLabel">What exactly counts as advice?</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Under Australian law, telling a specific person what to do with a specific holding &mdash;
+              buy it, sell it, keep it &mdash; is financial product advice, and giving it requires an
+              Australian Financial Services Licence. StockWise does not hold one, and does not want to
+              need one.
+            </p>
+            <p class="mb-0">
+              That is why we describe what a holding is and what has happened to it, but never say
+              whether it is a good one to have. A colour, a score or a rating would answer that question
+              just as clearly as a sentence would, so we do not use those either.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         A worked example, shown before anyone is asked to sign up. A visitor
+         can judge the quality of an explanation for themselves rather than
+         taking a marketing claim on trust. It describes what happened; it
+         does not rate the holding or suggest an action.
+         ============================================================ -->
+    <section class="container pb-5" id="example">
+      <h2>A real example, before you sign up for anything</h2>
+      <p>This is the kind of explanation StockWise produces. No score, no verdict, no recommendation.</p>
+
+      <div class="worked-example p-4 rounded">
+        <h3 class="h5">&ldquo;Why did $340 in franking credits appear in my account this quarter?&rdquo;</h3>
+        <dl class="row mb-0">
+          <dt class="col-sm-3">What happened</dt>
+          <dd class="col-sm-9">
+            Two of your Australian holdings paid a fully franked dividend in the same quarter.
+            The $340 is the franking credit attached to those dividends, recorded separately from
+            the cash you received.
+          </dd>
+
+          <dt class="col-sm-3">What a franking credit is</dt>
+          <dd class="col-sm-9">
+            Australian companies pay tax on their profits before paying dividends. A franking credit
+            is your share of the tax already paid, passed on to you so the same profit is not taxed
+            twice.
+          </dd>
+
+          <dt class="col-sm-3">Where it shows up</dt>
+          <dd class="col-sm-9">
+            It appears on your annual tax statement rather than as cash in your account, which is why
+            the dollar figure does not match your bank balance.
+          </dd>
+
+          <dt class="col-sm-3">What we are not saying</dt>
+          <dd class="col-sm-9 mb-0">
+            We are not telling you whether these holdings are worth keeping, or what to do next.
+            That decision is yours, and any tax question is one for a registered tax agent.
+          </dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Four cards, each doing real explanatory work rather than counting
+         features. A long wall of tools would read as a trading terminal,
+         which is the opposite of what this site is for. -->
+    <section class="container pb-5" id="what-we-do">
+      <h2 class="mb-4">What StockWise does</h2>
+      <div class="row g-4">
+        <div class="col-lg-3 col-sm-6">
+          <div class="card h-100 feature-card">
+            <div class="card-body">
+              <h3 class="card-title h5">Translates your holdings</h3>
+              <p class="card-text">
+                Every position you add is described in plain language: what the company or fund
+                actually does, and how it makes money.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="card h-100 feature-card">
+            <div class="card-body">
+              <h3 class="card-title h5">Explains what changed, and why</h3>
+              <p class="card-text">
+                When a distribution, a dividend or a balance moves, we describe what caused it,
+                after the fact, in the same words a person would use.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="card h-100 feature-card">
+            <div class="card-body">
+              <h3 class="card-title h5">Teaches from your own portfolio</h3>
+              <p class="card-text">
+                Concepts arrive when they turn up in your account, not as an abstract syllabus you
+                have to work through first.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="card h-100 feature-card">
+            <div class="card-body">
+              <h3 class="card-title h5">Never recommends</h3>
+              <p class="card-text">
+                No buy, sell or hold calls, and no rating that quietly implies one. The refusal is
+                the point, not a limitation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- A short linear flow, used only for the one action that genuinely has
+         a beginning and an end: adding a portfolio. The rest of the site is
+         open-ended, so it is not shaped like a sign-up wizard. -->
+    <section class="bg-light py-5" id="add-portfolio">
+      <div class="container">
+        <h2 class="mb-4">Adding a portfolio takes three steps</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <p><span class="step-number">1</span></p>
+            <h3 class="h5">Enter what you hold</h3>
+            <p>Type in your holdings, or paste a summary from your existing broker. Read-only:
+              StockWise never connects to a trading account.</p>
+          </div>
+          <div class="col-md-4">
+            <p><span class="step-number">2</span></p>
+            <h3 class="h5">We describe what is in it</h3>
+            <p>Each holding is explained in plain English, along with anything that has moved
+              recently and what caused it.</p>
+          </div>
+          <div class="col-md-4">
+            <p><span class="step-number">3</span></p>
+            <h3 class="h5">You decide, elsewhere</h3>
+            <p>Any buying or selling happens with your own broker. StockWise is the layer where
+              understanding happens, not where money moves.</p>
+          </div>
+        </div>
+        <p class="mt-4 mb-0"><a class="btn btn-primary" href="register.html">Create an account</a></p>
+      </div>
+    </section>
+
+    <!-- Recent explanations. Each link names its own article, so a screen
+         reader user listing the links on the page hears three distinct
+         destinations rather than "Read more" three times. The images are
+         decorative and carry an empty alt, because the heading beside them
+         already says what the item is. -->
+    <section class="container py-5" id="recent">
+      <h2 class="mb-4">Recent explanations</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <article class="card h-100">
+            <img src="images/share-split.svg" class="card-img-top" alt="">
+            <div class="card-body">
+              <h3 class="card-title h5">What a share split does to your holding</h3>
+              <p class="card-text">Your unit count changes and the price per unit changes with it.
+                Here is why the total does not move.</p>
+              <a class="btn btn-outline-primary btn-sm" href="search.html">Read: what a share split does</a>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-4">
+          <article class="card h-100">
+            <img src="images/distribution.svg" class="card-img-top" alt="">
+            <div class="card-body">
+              <h3 class="card-title h5">Why an ETF distribution changed this quarter</h3>
+              <p class="card-text">Distributions vary with what the underlying holdings paid.
+                Here is how to read the statement.</p>
+              <a class="btn btn-outline-primary btn-sm" href="search.html">Read: why a distribution changed</a>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-4">
+          <article class="card h-100">
+            <img src="images/statement.svg" class="card-img-top" alt="">
+            <div class="card-body">
+              <h3 class="card-title h5">Reading your annual tax statement</h3>
+              <p class="card-text">Which figures come from dividends, which from franking credits,
+                and which from capital gains.</p>
+              <a class="btn btn-outline-primary btn-sm" href="search.html">Read: your annual tax statement</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal above -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="Search results across StockWise plans, explanations and learning guides.">
+  <title>StockWise &mdash; Search Results</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- Page banner -->
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">Search results</h1>
+        <p class="lead mb-0">These draft pages show a sample set of results; the search is not wired up yet.</p>
+      </div>
+    </div>
+
+    <div class="container py-4">
+      <form class="row g-2 align-items-end" action="search.html" method="get">
+        <div class="col-md-8">
+          <label for="resultsSearch" class="form-label">Search StockWise</label>
+          <input type="search" class="form-control" id="resultsSearch" name="q" value="franking credits">
+        </div>
+        <div class="col-md-2">
+          <label for="sort" class="form-label">Sort by</label>
+          <select class="form-select" id="sort" name="sort">
+            <option value="relevance">Relevance</option>
+            <option value="newest">Newest first</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" type="submit">Search</button>
+        </div>
+      </form>
+      <p class="mt-3 mb-0">
+        Showing <strong>3</strong> results for &ldquo;franking credits&rdquo;.
+        <a href="plans.html">Clear search</a>
+      </p>
+    </div>
+
+    <div class="container pb-5">
+      <div class="row g-4">
+
+        <aside class="col-lg-3">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="h5 card-title">Filter results</h2>
+              <fieldset class="mb-3">
+                <legend class="h6">Category</legend>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="filterPlans" checked>
+                  <label class="form-check-label" for="filterPlans">Membership plans</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="filterExplanations" checked>
+                  <label class="form-check-label" for="filterExplanations">Holding explanations</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="filterGuides" checked>
+                  <label class="form-check-label" for="filterGuides">Learning guides</label>
+                </div>
+              </fieldset>
+              <button class="btn btn-outline-primary w-100" type="button">Apply filters</button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="col-lg-9">
+          <!-- A heading for the result list itself, so the three result titles
+               nest under it as h3 rather than sitting at the same level as the
+               filter panel. Hidden visually, present for screen readers. -->
+          <h2 class="visually-hidden">Results</h2>
+          <ul class="list-unstyled mb-0">
+            <li class="card mb-3">
+              <div class="card-body d-flex gap-3">
+                <img src="images/statement.svg" class="result-thumb rounded" alt="">
+                <div>
+                  <h3 class="h5 mb-1"><a href="plans.html">What a franking credit is, and why it is not cash</a></h3>
+                  <p class="mb-1 text-body-secondary small">Learning guide</p>
+                  <p class="mb-0">Where the figure comes from and why it appears on your tax statement
+                    rather than in your account.</p>
+                </div>
+              </div>
+            </li>
+            <li class="card mb-3">
+              <div class="card-body d-flex gap-3">
+                <img src="images/change-breakdown.svg" class="result-thumb rounded" alt="">
+                <div>
+                  <h3 class="h5 mb-1"><a href="plans.html">Why franking credits appeared in your account this quarter</a></h3>
+                  <p class="mb-1 text-body-secondary small">Change breakdown</p>
+                  <p class="mb-0">A worked example using two fully franked dividends paid in the same
+                    quarter.</p>
+                </div>
+              </div>
+            </li>
+            <li class="card mb-3">
+              <div class="card-body d-flex gap-3">
+                <img src="images/tiers.svg" class="result-thumb rounded" alt="">
+                <div>
+                  <h3 class="h5 mb-1"><a href="plans.html">Which plans include dividend and distribution breakdowns</a></h3>
+                  <p class="mb-1 text-body-secondary small">Membership plan</p>
+                  <p class="mb-0">Free covers five holdings; Standard and Full include full
+                    breakdowns.</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- "Previous" is inert on the first page. Rather than leaving a live
+               anchor that merely looks greyed out, it is rendered as a span with
+               no href, so it is genuinely not focusable and not announced as a
+               link. This is Bootstrap's documented pattern for a disabled
+               pagination item. -->
+          <nav aria-label="Search results pages">
+            <ul class="pagination">
+              <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+              </li>
+              <li class="page-item active" aria-current="page"><a class="page-link" href="search.html">1</a></li>
+              <li class="page-item"><a class="page-link" href="search.html">2</a></li>
+              <li class="page-item"><a class="page-link" href="search.html">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal on the home page -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

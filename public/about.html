@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="About StockWise - what we do, what we deliberately do not do, and how we got here.">
+  <title>StockWise &mdash; About</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white active" href="about.html" aria-current="page">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- Page banner -->
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">About StockWise</h1>
+        <p class="lead mb-0">What we do, what we deliberately do not do, and how we got here.</p>
+      </div>
+    </div>
+
+    <section class="container py-5" id="background">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-4">
+          <img src="images/journey.svg" class="img-fluid rounded" alt="">
+        </div>
+        <div class="col-md-8">
+          <h2>Our background</h2>
+          <p>
+            StockWise started in 2021 when one of our founders inherited a share portfolio and
+            realised she could read every number on the statement without understanding a single
+            decision behind it. Nothing she could find explained her own holdings; everything either
+            started from &ldquo;what is a share&rdquo; or tried to sell her a product.
+          </p>
+          <p>
+            We are based in Burwood, Victoria. Everyone on the team uses StockWise on their own
+            portfolio, which is the main reason the explanations stay in plain language.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Differentiation stated as a table: what we do, and what we deliberately
+         refuse to do. The refusal is the product, so it is set out explicitly
+         rather than implied. -->
+    <section class="bg-light py-5" id="what-we-are-not">
+      <div class="container">
+        <h2>Where StockWise sits</h2>
+        <p>Three different jobs get confused with one another. This is which one we do.</p>
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle bg-white">
+            <caption>How StockWise differs from a broker and from a financial adviser</caption>
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Type of service</th>
+                <th scope="col">What its job is</th>
+                <th scope="col">How it is paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">A broker</th>
+                <td>Executes the trade you ask for.</td>
+                <td>Brokerage per trade, so more trading earns it more.</td>
+              </tr>
+              <tr>
+                <th scope="row">A financial adviser</th>
+                <td>Gives you a personal recommendation and carries responsibility for it.</td>
+                <td>Fees for personal advice, which is why it is licensed.</td>
+              </tr>
+              <tr class="table-success">
+                <th scope="row">StockWise</th>
+                <td>Explains what your holdings are and what has happened to them. Nothing else.</td>
+                <td>A flat membership fee. We earn the same whether you trade or not.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5" id="aims">
+      <h2>What we will and will not do</h2>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h3 class="h5">We will</h3>
+          <ul>
+            <li>Describe what a holding is and how the business or fund actually makes money.</li>
+            <li>Explain, after the event, what caused a change in your account.</li>
+            <li>Define every term we use, without flagging it as remedial.</li>
+            <li>Say plainly when a question needs a licensed adviser or a registered tax agent.</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3 class="h5">We will not</h3>
+          <ul>
+            <li>Tell you to buy, sell or hold anything.</li>
+            <li>Score or rate a holding, which is a recommendation wearing a number.</li>
+            <li>Take payment or referral fees from any broker or fund manager.</li>
+            <li>Use countdowns, streaks or &ldquo;don't miss out&rdquo; messaging of any kind.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="container pb-5" id="milestones">
+      <h2>Milestones</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <caption>Key milestones in the growth of StockWise</caption>
+          <thead>
+            <tr>
+              <th scope="col">Year</th>
+              <th scope="col">Milestone</th>
+              <th scope="col">Members</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2021</td><td>Founded after a single inherited portfolio proved impossible to read</td><td>4</td></tr>
+            <tr><td>2022</td><td>First plain-English holding explanations released</td><td>1,200</td></tr>
+            <tr><td>2023</td><td>Explanations extended to distributions and franking credits</td><td>8,500</td></tr>
+            <tr><td>2024</td><td>Learning guides linked to the holdings a member already owns</td><td>24,000</td></tr>
+            <tr><td>2026</td><td>Membership plans introduced; still no referral revenue</td><td>61,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal on the home page -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

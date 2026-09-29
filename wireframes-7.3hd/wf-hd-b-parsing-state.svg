@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+<rect width="1000" height="700" fill="#F4C7A1"/>
+<rect x="20" y="20" width="960" height="84" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+<rect x="28" y="26" width="944" height="18" fill="#D9D9D9" stroke="#7F7F7F" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="500" y="38.5" font-family="Helvetica,Arial" font-size="10" text-anchor="middle">SKIP TO MAIN CONTENT (visible on keyboard focus only)</text>
+<rect x="32" y="50" width="120" height="46" fill="#5B9BD5" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="92" y="77.9" font-family="Helvetica,Arial" font-size="14" fill="#FFFFFF" text-anchor="middle">LOGO</text>
+<rect x="520" y="52" width="62" height="22" fill="#5B9BD5" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="551" y="66.85" font-family="Helvetica,Arial" font-size="11" fill="#FFFFFF" text-anchor="middle">Search</text>
+<rect x="586" y="52" width="152" height="22" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+<text x="662" y="66.5" font-family="Helvetica,Arial" font-size="10" text-anchor="middle">search input</text>
+<rect x="748" y="52" width="100" height="22" fill="#5B9BD5" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="798" y="66.85" font-family="Helvetica,Arial" font-size="11" fill="#FFFFFF" text-anchor="middle">Log in</text>
+<rect x="856" y="52" width="112" height="22" fill="#5B9BD5" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="912" y="66.5" font-family="Helvetica,Arial" font-size="10" fill="#FFFFFF" text-anchor="middle">Create account</text>
+<rect x="20" y="112" width="192" height="32" fill="#4472C4" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="116" y="132.55" font-family="Helvetica,Arial" font-size="13" fill="#FFFFFF" text-anchor="middle">Home</text>
+<rect x="212" y="112" width="192" height="32" fill="#4472C4" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="308" y="132.55" font-family="Helvetica,Arial" font-size="13" fill="#FFFFFF" text-anchor="middle">About</text>
+<rect x="404" y="112" width="192" height="32" fill="#4472C4" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="500" y="132.55" font-family="Helvetica,Arial" font-size="13" fill="#FFFFFF" text-anchor="middle">Plans & Services</text>
+<rect x="596" y="112" width="192" height="32" fill="#2F5496" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="692" y="132.55" font-family="Helvetica,Arial" font-size="13" fill="#FFFFFF" text-anchor="middle">Register</text>
+<rect x="788" y="112" width="192" height="32" fill="#4472C4" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="884" y="132.55" font-family="Helvetica,Arial" font-size="13" fill="#FFFFFF" text-anchor="middle">Contact</text>
+<rect x="20" y="152" width="960" height="54" fill="#ADCCE8" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="500" y="177.2" font-family="Helvetica,Arial" font-size="14" fill="#000000" text-anchor="middle" font-weight="bold">Create your account</text>
+<text x="500" y="193.2" font-family="Helvetica,Arial" font-size="11" fill="#000000" text-anchor="middle">Reading your statement — nothing has been sent anywhere yet</text>
+
+<rect x="240" y="230" width="520" height="220" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+<text x="500" y="258" font-family="Helvetica,Arial" font-size="12" fill="#000000" text-anchor="middle" font-weight="bold">"broker-statement-march.pdf"</text>
+<rect x="280" y="280" width="440" height="26" fill="#E7E6E6" stroke="#7F7F7F" stroke-width="1.5"/>
+<rect x="280" y="280" width="260" height="26" fill="#4472C4" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="500" y="297.5" font-family="Helvetica,Arial" font-size="10" fill="#FFFFFF" text-anchor="middle">Parsing… 59%</text>
+<text x="500" y="326" font-family="Helvetica,Arial" font-size="10" fill="#000000" text-anchor="middle">Running in a background thread (Web Worker)</text>
+<text x="500" y="342" font-family="Helvetica,Arial" font-size="10" fill="#000000" text-anchor="middle">so the page stays responsive while this file</text>
+<text x="500" y="358" font-family="Helvetica,Arial" font-size="10" fill="#000000" text-anchor="middle">is read and parsed on this device.</text>
+<rect x="340" y="378" width="320" height="44" fill="#BFE3D0" stroke="#2E7D32" stroke-width="1.5"/>
+<text x="500" y="396" font-family="Helvetica,Arial" font-size="10" fill="#1B5E20" text-anchor="middle" font-weight="bold">The file is not uploaded.</text>
+<text x="500" y="412" font-family="Helvetica,Arial" font-size="10" fill="#1B5E20" text-anchor="middle" font-weight="bold">It never leaves your browser.</text>
+
+<rect x="20" y="470" width="960" height="110" fill="#D9D9D9" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="34" y="490" font-family="Helvetica,Arial" font-size="11" fill="#000000" text-anchor="start" font-weight="bold">ACCESSIBILITY NOTE</text>
+<text x="500" y="510" font-family="Helvetica,Arial" font-size="10" fill="#000000" text-anchor="middle">Progress is exposed via aria-live so a screen reader announces it periodically,</text>
+<text x="500" y="526" font-family="Helvetica,Arial" font-size="10" fill="#000000" text-anchor="middle">not on every percentage tick. A visible, focusable Cancel button is always present</text>
+<text x="500" y="542" font-family="Helvetica,Arial" font-size="10" fill="#000000" text-anchor="middle">— drag-and-drop is optional, never the only way to supply the file.</text>
+
+<rect x="20" y="654" width="960" height="16" fill="#BFBFBF" stroke="#7F7F7F" stroke-width="1.5"/>
+<text x="500" y="665.5" font-family="Helvetica,Arial" font-size="9" fill="#FFFFFF" text-anchor="middle">FOOTER — address . phone . email . hours . site map links . "factual information and general explanations only"</text>
+<text x="500" y="688" font-family="Helvetica,Arial" font-size="13" fill="#000000" text-anchor="middle" font-weight="bold">Wireframe B — Local parsing state — Web Worker, no network activity</text>
+</svg>

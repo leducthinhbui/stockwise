@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="How StockWise's Import your holdings feature reads CSV and PDF statements locally, in the browser, using the File System Access API, a Web Worker and pdf.js.">
+  <title>StockWise &mdash; Building &ldquo;Import your holdings&rdquo;</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">Building &ldquo;Import your holdings&rdquo;</h1>
+        <p class="lead mb-0">
+          A tutorial covering how this feature reads a broker statement entirely in the browser, for
+          another developer who wants to implement something similar. SIT774 Task 10.3HD, implementing
+          the Task 7.3HD proposal.
+        </p>
+      </div>
+    </div>
+
+    <div class="container py-5">
+
+      <p>
+        Try it yourself on the <a href="register.html#importPanel">Register page</a>, under
+        &ldquo;Your holdings.&rdquo; This page explains how it works underneath.
+      </p>
+
+      <h2>The problem this solves</h2>
+      <p>
+        StockWise's Register page promises it is <strong>read&#8209;only</strong>: it never connects to a
+        trading account. That rules out the obvious shortcut &mdash; a &ldquo;Connect your broker&rdquo;
+        button using an API or OAuth flow &mdash; since that would mean StockWise holding an access token
+        and an ongoing connection to a live financial account. The alternative is to let the user supply
+        the statement their broker already gives them (a CSV or PDF export) and read it
+        <strong>locally</strong>, so the file, and anything extracted from it, never has to leave the
+        device during parsing.
+      </p>
+
+      <h2>Three pieces, three files</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <caption>Files that make up this feature</caption>
+          <thead class="table-light">
+            <tr><th scope="col">File</th><th scope="col">Role</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>register.html</code></td>
+              <td>The &ldquo;Your holdings&rdquo; panel: a Choose File button, a drop zone, a progress
+                region, and the review table these scripts fill in.</td>
+            </tr>
+            <tr>
+              <td><code>js/holdings-import.js</code></td>
+              <td>Runs on the main thread. Opens the file (two different ways, below), hands its
+                contents to the worker, and renders the review table from what comes back.</td>
+            </tr>
+            <tr>
+              <td><code>js/holdings-import-worker.js</code></td>
+              <td>A Web Worker. Does the actual parsing &mdash; CSV field-splitting, and the PDF
+                row-grouping heuristic &mdash; off the main thread.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Opening the file: two APIs, on purpose</h2>
+      <p>
+        CSV files are opened with <code>window.showOpenFilePicker()</code>, the File System Access API.
+        It is Chromium-only at the time of writing, so it is feature-detected, not assumed:
+      </p>
+      <pre class="bg-light p-3 rounded"><code>var supportsFileSystemAccess = typeof window.showOpenFilePicker === 'function';</code></pre>
+      <p>
+        Everything else &mdash; PDF files, and any browser without that API (Safari, Firefox) &mdash;
+        falls back to a plain <code>&lt;input type="file"&gt;</code> plus a click on it. Both paths end
+        up with the same thing, a <code>File</code> object, so the rest of the code does not need to
+        know which one supplied it. Drag-and-drop onto the panel is wired up too, but only as a third way
+        to reach the same <code>handleFile(file)</code> function &mdash; the button is never the only
+        path, which matters for a keyboard or screen-reader user (more on that below).
+      </p>
+
+      <h2>Why parsing happens in a Web Worker</h2>
+      <p>
+        A statement can be a large file, and turning it into structured rows is CPU work. Doing that on
+        the main thread would freeze the page &mdash; scrolling, typing, clicking, all of it &mdash;
+        until parsing finished. A <code>Worker</code> runs JavaScript on a separate thread, so the page
+        stays responsive:
+      </p>
+      <pre class="bg-light p-3 rounded"><code>worker = new Worker('js/holdings-import-worker.js');
+worker.postMessage({ type: 'csv', text: fileText });
+worker.addEventListener('message', function (event) {
+  // event.data is { type: 'result', rows: [...] }
+});</code></pre>
+      <p>
+        The worker cannot touch the DOM at all &mdash; that is the trade-off for running off-thread &mdash;
+        so it only ever sends back plain data (an array of row objects), and
+        <code>holdings-import.js</code> is the only place that builds HTML from it.
+      </p>
+
+      <h2>CSV: the confident path</h2>
+      <p>
+        CSV is a solved problem here: split on commas (respecting quoted fields), match a header row's
+        column names against a few likely spellings (<code>name</code>/<code>holding</code>/<code>security</code>,
+        and similarly for ticker and quantity), and read each row against those columns. A row only gets
+        flagged <strong>Needs review</strong> if the name is blank or the quantity is not a number &mdash;
+        otherwise it is trusted.
+      </p>
+
+      <h2>PDF: the hard part, honestly</h2>
+      <p>
+        A PDF has no built-in idea of a table. <a href="https://mozilla.github.io/pdf.js/" target="_blank"
+          rel="noopener">pdf.js</a> (the library behind Firefox's own PDF viewer) hands back a flat list
+        of text runs, each with an x/y position on the page &mdash; not rows, not columns, just
+        positioned text. Turning that into holdings is a two-step heuristic:
+      </p>
+      <ol>
+        <li>
+          <strong>Group into lines.</strong> Runs whose y-coordinate is within a few points of each
+          other are treated as the same line. This has to be done per page, so a line near the bottom of
+          page 1 is never merged with one near the top of page 2.
+        </li>
+        <li>
+          <strong>Split each line into columns.</strong> Within a line, a horizontal gap bigger than a
+          threshold is treated as a column boundary. The column that is purely numeric becomes the
+          quantity; the column with real letters in it becomes the name; anything short and in capitals
+          becomes a ticker guess.
+        </li>
+      </ol>
+      <p>
+        A line that does not produce both a name-like and a quantity-like column &mdash; a page title, a
+        column heading, a footer &mdash; is simply not treated as a row, rather than guessed at. A line
+        that produces <em>more</em> columns than expected is kept, but flagged <strong>Needs
+          review</strong>, since that usually means a name wrapped onto two lines and the heuristic split
+        it awkwardly.
+      </p>
+      <p>
+        This is a genuine limitation, not a bug to be fixed away: company names that wrap onto a second
+        line, statements where the header does not repeat on page two, and multi-column layouts where
+        text extraction order does not match reading order can all defeat this heuristic. Different
+        brokers do not share a statement template, and a broker can change its layout without notice.
+        That is exactly why nothing here is auto-committed &mdash; see the review table, next.
+      </p>
+
+      <h3>A note on where pdf.js's own worker fits in</h3>
+      <p>
+        pdf.js already manages its own internal worker (<code>pdf.worker.js</code>) for the expensive
+        binary PDF parsing step. Rather than nesting a second copy of pdf.js inside
+        <code>holdings-import-worker.js</code> &mdash; a fragile worker-inside-a-worker setup for no real
+        benefit &mdash; this implementation calls pdf.js from the main thread (it is already off-thread
+        for the heavy part), and hands only the lightweight extracted text items to the custom worker,
+        which does the row-grouping heuristic. That CPU-bound step has no built-in pdf.js function to do
+        it, and is the part actually worth moving off the main thread here.
+      </p>
+
+      <h2>The review table: nothing is auto-committed</h2>
+      <p>
+        Every row, from either CSV or PDF, lands in an editable table before anything is saved &mdash;
+        this is a usability requirement, not a nice-to-have, because it is the only honest way to ship a
+        parser that will sometimes be wrong. Confidence is shown per row, not as one pass/fail result for
+        the whole file: a name field can be typed over, a bad quantity can be corrected, an entire row
+        can be removed. Manual entry (&ldquo;Add a holding manually&rdquo;) adds a blank row into the
+        exact same table, so import and manual entry are two ways into one review step, not two separate
+        features.
+      </p>
+      <p>
+        Clicking <strong>Save holdings</strong> is the only point past which rows are treated as
+        confirmed. StockWise's register form has no backend holdings storage yet, so this demonstrates
+        the interaction itself: the moment nothing can be auto-committed past, matching what the
+        page's existing consent checkboxes already govern for manually-typed holdings.
+      </p>
+
+      <h2>Usability, accessibility and performance</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h3 class="h5">Usability</h3>
+          <p>
+            Partial success is a normal outcome, not an error state: if seven of ten rows parse cleanly,
+            the user sees seven filled rows and three flagged ones, never a rejected file. CSV is nudged
+            as the confident path when a PDF produces low-confidence rows.
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h3 class="h5">Accessibility</h3>
+          <p>
+            Drag-and-drop is a convenience, never the only path &mdash; the Choose File button is a real,
+            keyboard-focusable, screen-reader-operable control. Progress updates use
+            <code>aria-live="polite"</code>, announced at meaningful steps rather than on every
+            percentage tick. The review table is a real, properly headed <code>&lt;table&gt;</code>, the
+            same convention already used for the plan comparison table on <a href="plans.html">Plans
+              &amp; Services</a>.
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h3 class="h5">Performance</h3>
+          <p>
+            Parsing runs in a Web Worker specifically so a large file does not block the interface while
+            it is read. The trade-off is the added complexity of message-passing between the worker and
+            the page &mdash; justified here because file size and parse time are outside the site's
+            control.
+          </p>
+        </div>
+      </div>
+
+      <h2>Try it with your own file</h2>
+      <p>
+        A CSV needs a header row containing <code>name</code>, <code>ticker</code> and
+        <code>quantity</code> (or close spellings &mdash; <code>units</code>, <code>shares</code>,
+        <code>symbol</code> and similar are recognised too). Any PDF with a holdings-style table is
+        worth trying; the review table will show exactly what was found, confidence and all.
+      </p>
+      <p>
+        <a href="register.html#importPanel" class="btn btn-primary">Go to the Register page</a>
+      </p>
+
+    </div>
+  </main>
+
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">Back to top</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/interactions.js"></script>
+</body>
+
+</html>

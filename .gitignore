@@ -1,0 +1,8 @@
+node_modules/
+*.db
+.DS_Store
+
+# OnTrack submission deliverables (reports/screenshots for past tasks) -
+# these belong in the portfolio submission, not the source code repo.
+Task*.pdf
+Task*.md
