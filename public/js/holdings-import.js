@@ -401,14 +401,17 @@ if (typeof document !== 'undefined') {
         invalidField = 'quantity';
       }
 
-      nameInput.setAttribute('aria-invalid', String(invalidField === 'name'));
-      qtyInput.setAttribute('aria-invalid', String(invalidField === 'quantity'));
-
-      setRowStatus(tr, confidence, reason, true);
+      setRowStatus(tr, confidence, reason, true, invalidField);
       updateSummary();
     }
 
-    function setRowStatus(tr, confidence, reason, announceChange) {
+    // invalidField ('name' | 'quantity') narrows aria-invalid to the one
+    // field revalidateRow found the problem in. It's omitted when a row is
+    // first created from a parsed or manual result, which has a reason but
+    // no single field to blame - aria-invalid is set on every field then,
+    // the same way aria-describedby already was, so a freshly flagged row
+    // is not silently missing aria-invalid until the user's first edit.
+    function setRowStatus(tr, confidence, reason, announceChange, invalidField) {
       var previousConfidence = tr.dataset.confidence || null;
       tr.dataset.confidence = confidence;
       tr.classList.toggle('table-warning', confidence === 'low');
@@ -436,6 +439,11 @@ if (typeof document !== 'undefined') {
         } else {
           inputs.forEach(function (input) { input.removeAttribute('aria-describedby'); });
         }
+        inputs.forEach(function (input) {
+          var field = input.dataset.field;
+          var invalid = invalidField ? field === invalidField : (field === 'name' || field === 'quantity');
+          input.setAttribute('aria-invalid', String(invalid));
+        });
       } else {
         // "Parsed", not "Included": this only means the checks StockWise
         // runs found nothing wrong, not that the row is guaranteed
