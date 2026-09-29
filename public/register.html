@@ -88,7 +88,17 @@
         <code>required</code> attribute, so screen readers announce it as well.
       </p>
 
-      <form>
+      <!-- This page is a design prototype (Task 5.2D): there is no account
+           database behind it, so submitting shows a confirmation on the page
+           itself rather than actually creating anything. The "Your holdings"
+           import feature above is the one part of this page with a real
+           backend (Task 10.3HD). -->
+      <div class="alert alert-success d-none" id="registerSuccessBanner" role="status" tabindex="-1">
+        This is a design prototype, so no account was actually created, but everything you entered
+        passed validation. A real "Create account" button would take you to a Members Area next.
+      </div>
+
+      <form id="registerForm">
 
         <fieldset class="mb-4">
           <legend class="h5">Login details</legend>
@@ -444,6 +454,8 @@
   </script>
   <!-- "Import your holdings" feature (Task 10.3HD) -->
   <script src="js/holdings-import.js"></script>
+  <!-- Register form confirmation (prototype only, no real account created) -->
+  <script src="js/register-prototype.js"></script>
   <!-- Shared interactivity: back-to-top show/hide -->
   <script src="js/interactions.js"></script>
 </body>
