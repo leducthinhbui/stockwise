@@ -63,9 +63,11 @@ if (typeof document !== 'undefined') {
     var addManualBtn = document.getElementById('addManualRowBtn');
     var saveBtn = document.getElementById('saveHoldingsBtn');
     var progressRegion = document.getElementById('importProgress');
+    var progressBarWrap = document.getElementById('importProgressBarWrap');
     var progressBar = document.getElementById('importProgressBar');
     var progressText = document.getElementById('importProgressText');
     var reviewSection = document.getElementById('reviewSection');
+    var reviewHeading = document.getElementById('reviewHeading');
     var reviewBody = document.getElementById('reviewBody');
     var reviewSummary = document.getElementById('reviewSummary');
     var savedBanner = document.getElementById('holdingsSavedBanner');
@@ -230,7 +232,7 @@ if (typeof document !== 'undefined') {
       if (msg.type === 'progress') {
         showProgress(msg.percent, 'Parsing…');
       } else if (msg.type === 'result') {
-        hideProgress();
+        finishProgress(msg.rows);
         addRowsToReview(msg.rows);
       }
     }
@@ -240,6 +242,7 @@ if (typeof document !== 'undefined') {
     // screen-reader user is not flooded with updates. ----------------------
     function showProgress(percent, label) {
       progressRegion.classList.remove('d-none');
+      progressBarWrap.classList.remove('d-none');
       progressBar.classList.remove('bg-danger');
       progressBar.style.width = percent + '%';
       progressBar.setAttribute('aria-valuenow', String(percent));
@@ -250,9 +253,24 @@ if (typeof document !== 'undefined') {
       progressRegion.classList.add('d-none');
     }
 
+    // The only aria-live region disappearing the moment results arrive
+    // meant a screen-reader user heard "Parsing…" and then nothing. This
+    // keeps the region visible and gives it something to announce - only
+    // the progress bar itself (no longer meaningful once parsing is done)
+    // is hidden.
+    function finishProgress(rows) {
+      progressBarWrap.classList.add('d-none');
+      var needsReview = rows.filter(function (r) { return r.confidence === 'low'; }).length;
+      progressText.textContent = rows.length === 0
+        ? 'No holdings found in this file.'
+        : 'Found ' + rows.length + (rows.length === 1 ? ' holding' : ' holdings') +
+          (needsReview > 0 ? ', ' + needsReview + (needsReview === 1 ? ' needs' : ' need') + ' review' : '') + '.';
+    }
+
     function showImportError(message) {
       hideProgress();
       progressRegion.classList.remove('d-none');
+      progressBarWrap.classList.remove('d-none');
       progressText.textContent = message;
       progressBar.style.width = '100%';
       progressBar.classList.add('bg-danger');
@@ -262,7 +280,11 @@ if (typeof document !== 'undefined') {
     var RESERVED_NAME_PATTERN = /^(total|subtotal|balance|cash|grand total|portfolio value)\b/i;
 
     addManualBtn.addEventListener('click', function () {
-      addRowsToReview([{ name: '', ticker: '', quantity: null, confidence: 'low', reason: 'Please enter a holding name and quantity.', manual: true }]);
+      var added = addRowsToReview([{ name: '', ticker: '', quantity: null, confidence: 'low', reason: 'Please enter a holding name and quantity.', manual: true }]);
+      // The new row lands at the bottom of the table, possibly off
+      // screen - focus its Name field rather than leaving focus on the
+      // button that no longer has anywhere useful to go next.
+      added[0].querySelector('[data-field="name"]').focus();
     });
 
     function clearImportedRows() {
@@ -273,9 +295,11 @@ if (typeof document !== 'undefined') {
     }
 
     function addRowsToReview(rows) {
-      if (rows.length === 0) return;
+      if (rows.length === 0) return [];
       reviewSection.classList.remove('d-none');
       savedBanner.classList.add('d-none');
+
+      var created = [];
 
       rows.forEach(function (row) {
         rowCounter += 1;
@@ -296,17 +320,34 @@ if (typeof document !== 'undefined') {
         removeBtn.className = 'btn btn-sm btn-outline-danger';
         removeBtn.textContent = 'Remove';
         removeBtn.addEventListener('click', function () {
+          // Removing a row deletes the focused button with it, which
+          // would otherwise drop focus back to <body> and force a keyboard
+          // user to Tab through the whole form again for every row they
+          // remove. Move focus to the next row's Remove button, or the
+          // previous row's if this was the last one, or the review
+          // heading if the table is now empty.
+          var allRows = Array.prototype.slice.call(reviewBody.querySelectorAll('tr'));
+          var idx = allRows.indexOf(tr);
+          var focusRow = allRows[idx + 1] || allRows[idx - 1];
           tr.remove();
           updateSummary();
+          if (focusRow) {
+            var nextBtn = focusRow.querySelector('.btn-outline-danger');
+            if (nextBtn) nextBtn.focus();
+          } else if (reviewHeading) {
+            reviewHeading.focus();
+          }
         });
         actionCell.appendChild(removeBtn);
         tr.appendChild(actionCell);
 
         reviewBody.appendChild(tr);
         setRowStatus(tr, row.confidence, row.reason);
+        created.push(tr);
       });
 
       updateSummary();
+      return created;
     }
 
     function editableCell(tr, field, value) {
@@ -333,34 +374,52 @@ if (typeof document !== 'undefined') {
     // found, etc.) - those were about how the row was read; this is about
     // whether the row, as it now stands, looks like a real holding.
     function revalidateRow(tr) {
-      var name = tr.querySelector('[data-field="name"]').value.trim();
-      var qtyRaw = tr.querySelector('[data-field="quantity"]').value.trim();
+      var nameInput = tr.querySelector('[data-field="name"]');
+      var qtyInput = tr.querySelector('[data-field="quantity"]');
+      var name = nameInput.value.trim();
+      var qtyRaw = qtyInput.value.trim();
       var quantity = parseFloat(qtyRaw);
 
       var confidence = 'high';
       var reason = null;
+      var invalidField = null;
       if (name === '') {
         confidence = 'low';
         reason = 'Please enter a holding name.';
+        invalidField = 'name';
       } else if (RESERVED_NAME_PATTERN.test(name)) {
         confidence = 'low';
         reason = 'This looks like a total or summary line, not a holding.';
+        invalidField = 'name';
       } else if (qtyRaw === '' || isNaN(quantity)) {
         confidence = 'low';
         reason = 'Please enter a quantity.';
+        invalidField = 'quantity';
       } else if (quantity <= 0) {
         confidence = 'low';
         reason = 'Quantity must be greater than zero.';
+        invalidField = 'quantity';
       }
 
-      setRowStatus(tr, confidence, reason);
+      nameInput.setAttribute('aria-invalid', String(invalidField === 'name'));
+      qtyInput.setAttribute('aria-invalid', String(invalidField === 'quantity'));
+
+      setRowStatus(tr, confidence, reason, true);
       updateSummary();
     }
 
-    function setRowStatus(tr, confidence, reason) {
+    function setRowStatus(tr, confidence, reason, announceChange) {
+      var previousConfidence = tr.dataset.confidence || null;
+      tr.dataset.confidence = confidence;
       tr.classList.toggle('table-warning', confidence === 'low');
       var statusCell = tr.children[3];
       statusCell.innerHTML = '';
+
+      // Tabbing through a flagged row previously never mentioned why it
+      // was flagged - the reason lived in a later cell, linked to
+      // nothing. Every editable field in the row now points at it.
+      var reasonId = 'holding-reason-' + tr.dataset.rowId;
+      var inputs = tr.querySelectorAll('input[data-field]');
 
       if (confidence === 'low') {
         var badge = document.createElement('span');
@@ -369,9 +428,13 @@ if (typeof document !== 'undefined') {
         statusCell.appendChild(badge);
         if (reason) {
           var reasonText = document.createElement('div');
+          reasonText.id = reasonId;
           reasonText.className = 'small text-body-secondary mt-1';
           reasonText.textContent = reason;
           statusCell.appendChild(reasonText);
+          inputs.forEach(function (input) { input.setAttribute('aria-describedby', reasonId); });
+        } else {
+          inputs.forEach(function (input) { input.removeAttribute('aria-describedby'); });
         }
       } else {
         // "Parsed", not "Included": this only means the checks StockWise
@@ -382,7 +445,39 @@ if (typeof document !== 'undefined') {
         goodBadge.className = 'badge text-bg-success';
         goodBadge.textContent = 'Parsed';
         statusCell.appendChild(goodBadge);
+        inputs.forEach(function (input) {
+          input.removeAttribute('aria-describedby');
+          input.removeAttribute('aria-invalid');
+        });
       }
+
+      updateRemoveLabel(tr);
+
+      // Fixing or breaking a row is announced once, through the same
+      // status region the import progress uses - not reviewSummary, which
+      // changes on every keystroke and would read out constantly if it
+      // were a live region.
+      if (announceChange && previousConfidence && previousConfidence !== confidence) {
+        var stillNeedsReview = reviewBody.querySelectorAll('tr.table-warning').length;
+        var message = confidence === 'high' ? 'Fixed. ' : 'This row needs review. ';
+        message += stillNeedsReview === 0
+          ? 'Nothing else needs review.'
+          : stillNeedsReview + (stillNeedsReview === 1 ? ' row needs' : ' rows need') + ' review.';
+        progressRegion.classList.remove('d-none');
+        progressBarWrap.classList.add('d-none');
+        progressText.textContent = message;
+      }
+    }
+
+    // Every row previously had identical "Remove" buttons - a keyboard
+    // user tabbing through, or a screen-reader user listing the buttons on
+    // the page, could not tell one from another. Kept in sync with the
+    // name field so it reads e.g. "Remove Commonwealth Bank".
+    function updateRemoveLabel(tr) {
+      var removeBtn = tr.querySelector('.btn-outline-danger');
+      if (!removeBtn) return;
+      var name = tr.querySelector('[data-field="name"]').value.trim();
+      removeBtn.setAttribute('aria-label', name ? 'Remove ' + name : 'Remove row ' + tr.dataset.rowId);
     }
 
     function updateSummary() {
@@ -392,11 +487,6 @@ if (typeof document !== 'undefined') {
         ? 'No holdings in this import yet.'
         : rowEls.length + (rowEls.length === 1 ? ' holding' : ' holdings') + ' ready to review' +
           (needsReview > 0 ? ', ' + needsReview + ' needs a closer look' : '') + '.';
-
-      // Nothing flagged "Needs review" can be saved silently - the user
-      // must fix it or remove the row first, rather than the flag being
-      // informational only.
-      saveBtn.disabled = rowEls.length === 0 || needsReview > 0;
     }
 
     // --- Save (Step 4 of the proposal): nothing is added to the account
@@ -405,9 +495,24 @@ if (typeof document !== 'undefined') {
     // holdings storage yet, so this demonstrates the interaction itself:
     // the moment past which rows are treated as confirmed, matching what
     // the manual-entry consent checkboxes already on this page govern. -----
+    //
+    // Save is never disabled: a disabled button is skipped by Tab, so a
+    // keyboard user could reach it but never learn why it does nothing.
+    // Instead, a flagged row blocks the save, moves focus to that row's
+    // Name field, and announces why through the same status region.
     saveBtn.addEventListener('click', function () {
       var rows = reviewBody.querySelectorAll('tr');
-      if (rows.length === 0 || saveBtn.disabled) {
+      if (rows.length === 0) {
+        return;
+      }
+      var firstFlagged = reviewBody.querySelector('tr.table-warning');
+      if (firstFlagged) {
+        var needsReview = reviewBody.querySelectorAll('tr.table-warning').length;
+        progressRegion.classList.remove('d-none');
+        progressBarWrap.classList.add('d-none');
+        progressText.textContent = needsReview + (needsReview === 1 ? ' row needs' : ' rows need') +
+          ' fixing before you can save.';
+        firstFlagged.querySelector('[data-field="name"]').focus();
         return;
       }
       savedBanner.classList.remove('d-none');
