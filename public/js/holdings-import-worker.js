@@ -25,23 +25,30 @@
 
 'use strict';
 
-self.addEventListener('message', function (event) {
-  var msg = event.data;
+// Guarded rather than called unconditionally: this file is also require()'d
+// directly, unmodified, by test/holdings-import-worker.test.js, so parseCsv
+// and groupPdfItemsIntoRows can be tested without a real Worker/browser. In
+// an actual Worker, self.addEventListener exists and this runs as normal.
+if (typeof self !== 'undefined' && self.addEventListener) {
+  self.addEventListener('message', function (event) {
+    var msg = event.data;
 
-  if (msg.type === 'csv') {
-    self.postMessage({ type: 'progress', percent: 50 });
-    var rows = parseCsv(msg.text);
-    self.postMessage({ type: 'result', rows: rows });
-    return;
-  }
+    if (msg.type === 'csv') {
+      self.postMessage({ type: 'progress', percent: 50 });
+      var rows = parseCsv(msg.text);
+      self.postMessage({ type: 'result', rows: rows });
+      return;
+    }
 
-  if (msg.type === 'pdf') {
-    self.postMessage({ type: 'progress', percent: 60 });
-    var rows2 = groupPdfItemsIntoRows(msg.items);
-    self.postMessage({ type: 'result', rows: rows2 });
-    return;
-  }
-});
+    if (msg.type === 'pdf') {
+      self.postMessage({ type: 'progress', percent: 60 });
+      var rows2 = groupPdfItemsIntoRows(msg.items);
+      self.postMessage({ type: 'result', rows: rows2 });
+      return;
+    }
+  });
+}
+
 
 /**
  * CSV parsing is the confident path (Step 6 of the proposal): delimited
@@ -323,4 +330,8 @@ function groupPdfItemsIntoRows(items) {
   }
 
   return rows;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { parseCsv: parseCsv, groupPdfItemsIntoRows: groupPdfItemsIntoRows };
 }

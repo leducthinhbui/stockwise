@@ -4,7 +4,8 @@
   "description": "Task 10.2D - Website Project Part 3: database integration",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "express": "^5.0.0",

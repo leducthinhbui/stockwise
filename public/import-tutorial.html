@@ -111,17 +111,27 @@
 
       <h2>Opening the file: two APIs, on purpose</h2>
       <p>
-        CSV files are opened with <code>window.showOpenFilePicker()</code>, the File System Access API.
-        It is Chromium-only at the time of writing, so it is feature-detected, not assumed:
+        Both CSV and PDF are opened with <code>window.showOpenFilePicker()</code>, the File System
+        Access API, when the browser supports it. It is Chromium-only at the time of writing, so it is
+        feature-detected, not assumed:
       </p>
       <pre class="bg-light p-3 rounded"><code>var supportsFileSystemAccess = typeof window.showOpenFilePicker === 'function';</code></pre>
       <p>
-        Everything else &mdash; PDF files, and any browser without that API (Safari, Firefox) &mdash;
-        falls back to a plain <code>&lt;input type="file"&gt;</code> plus a click on it. Both paths end
+        Any browser without that API (Safari, Firefox) falls back to a plain
+        <code>&lt;input type="file" accept=".csv,.pdf"&gt;</code> plus a click on it. Both paths end
         up with the same thing, a <code>File</code> object, so the rest of the code does not need to
         know which one supplied it. Drag-and-drop onto the panel is wired up too, but only as a third way
         to reach the same <code>handleFile(file)</code> function &mdash; the button is never the only
         path, which matters for a keyboard or screen-reader user (more on that below).
+      </p>
+      <p>
+        The file handle <code>showOpenFilePicker()</code> returns is used once, for
+        <code>getFile()</code>, then discarded &mdash; nothing here re-opens it later. That is a
+        deliberate choice for what this task builds, not an oversight: the Task 7.3HD proposal specified
+        the File System Access API for this feature, it degrades to the fallback in every browser that
+        lacks it, and holding onto the handle is the natural next step for a feature this prototype does
+        not yet have &mdash; re-importing next month's statement without a fresh file picker, once
+        StockWise has somewhere to persist that handle across a session.
       </p>
 
       <h2>Why parsing happens in a Web Worker</h2>
@@ -142,13 +152,21 @@ worker.addEventListener('message', function (event) {
         <code>holdings-import.js</code> is the only place that builds HTML from it.
       </p>
 
-      <h2>CSV: the confident path</h2>
+      <h2>CSV: the confident path, with real gaps of its own</h2>
       <p>
-        CSV is a solved problem here: split on commas (respecting quoted fields), match a header row's
-        column names against a few likely spellings (<code>name</code>/<code>holding</code>/<code>security</code>,
-        and similarly for ticker and quantity), and read each row against those columns. A row only gets
-        flagged <strong>Needs review</strong> if the name is blank or the quantity is not a number &mdash;
-        otherwise it is trusted.
+        CSV is close to a solved problem here, not entirely one: split on comma, semicolon or tab
+        (detected from the header row), respecting quoted fields, then match a header row's column names
+        against a few likely spellings by substring &mdash; <code>"Security Name"</code> matches the
+        <code>security</code> candidate, not just an exact <code>name</code> &mdash; for name, ticker and
+        quantity. Because a broker export sometimes has an account or date line above the real header, the
+        first ten lines are searched for one that actually names a holding and a quantity column, rather
+        than assuming line 1 always is it.
+      </p>
+      <p>
+        A row is flagged <strong>Needs review</strong> if the name is blank, the name matches a total,
+        subtotal, balance or cash line, the quantity column is not a number, the quantity has text left
+        over after the number (a CSV cell reading <code>"10 (pending)"</code> parses to 10 but is flagged,
+        not silently trusted), or the quantity is zero or negative. Anything else is trusted.
       </p>
 
       <h2>PDF: the hard part, honestly</h2>
@@ -160,30 +178,46 @@ worker.addEventListener('message', function (event) {
       </p>
       <ol>
         <li>
-          <strong>Group into lines.</strong> Runs whose y-coordinate is within a few points of each
-          other are treated as the same line. This has to be done per page, so a line near the bottom of
-          page 1 is never merged with one near the top of page 2.
+          <strong>Group into lines.</strong> Runs whose y-coordinate is within a tolerance of each other
+          are treated as the same line, done per page so a line near the bottom of page 1 is never merged
+          with one near the top of page 2. That tolerance is not a fixed number of points: it is derived
+          from the median height of the text runs on the page (pdf.js reports each run's real width and
+          height, not just its position), so a tightly-set statement and a large-print one each get a
+          tolerance suited to their own font size, rather than one guess for every layout.
         </li>
         <li>
           <strong>Split each line into columns.</strong> Within a line, a horizontal gap bigger than a
-          threshold is treated as a column boundary. The column that is purely numeric becomes the
-          quantity; the column with real letters in it becomes the name; anything short and in capitals
-          becomes a ticker guess.
+          threshold is treated as a column boundary, measured from each run's actual width rather than
+          estimated from its character count. The column that is purely numeric (currency symbols and
+          thousands separators stripped first) becomes the quantity. The <em>ticker</em> is picked first,
+          as a short mostly-uppercase token, since some statements print it before the name; the longest
+          remaining text column becomes the name. A name matching a total, subtotal, balance or cash line
+          is flagged rather than imported as a holding.
         </li>
       </ol>
       <p>
         A line that does not produce both a name-like and a quantity-like column &mdash; a page title, a
-        column heading, a footer &mdash; is simply not treated as a row, rather than guessed at. A line
-        that produces <em>more</em> columns than expected is kept, but flagged <strong>Needs
-          review</strong>, since that usually means a name wrapped onto two lines and the heuristic split
-        it awkwardly.
+        column heading, a footer &mdash; is not treated as a row, unless it looks like a wrapped
+        continuation of the name directly above it (letters only, no number anywhere on the line), in
+        which case it is folded into that row and flagged, rather than silently dropped. A line that
+        produces <em>more</em> columns than expected is kept, but flagged <strong>Needs
+          review</strong>, since that usually means a name split awkwardly across columns.
       </p>
       <p>
-        This is a genuine limitation, not a bug to be fixed away: company names that wrap onto a second
-        line, statements where the header does not repeat on page two, and multi-column layouts where
-        text extraction order does not match reading order can all defeat this heuristic. Different
-        brokers do not share a statement template, and a broker can change its layout without notice.
-        That is exactly why nothing here is auto-committed &mdash; see the review table, next.
+        This is a genuine limitation, not a bug to be fixed away: statements where the header does not
+        repeat on page two, and multi-column layouts where text extraction order does not match reading
+        order, can still defeat this heuristic. Different brokers do not share a statement template, and a
+        broker can change its layout without notice. That is exactly why nothing here is auto-committed
+        &mdash; see the review table, next.
+      </p>
+      <p>
+        The cases above (a ticker printed before the name, a totals line, a value written with a currency
+        symbol, a wrapped name) are covered by a small regression test,
+        <a href="https://github.com/leducthinhbui/stockwise/blob/main/test/holdings-import-worker.test.js"
+          target="_blank" rel="noopener"><code>test/holdings-import-worker.test.js</code></a>, run with
+        <code>npm test</code>. It tests the row-grouping logic against made-up text-item coordinates, not
+        against pdf.js reading a real broker PDF &mdash; that gap is a known limitation of this testing,
+        not just of the parser.
       </p>
 
       <h3>A note on where pdf.js's own worker fits in</h3>
