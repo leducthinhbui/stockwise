@@ -18,11 +18,41 @@
    gracefully rather than failing.
    ========================================================================== */
 
-(function () {
-  'use strict';
+// Converts one pdf.js TextItem into the { str, x, y, w, h, page } shape the
+// worker reads. Pulled out of extractPdfTextItems below so it can be
+// require()'d and tested in Node (test/holdings-import.test.js) without a
+// real PDF or DOM - the actual coordinate flip and width/height pass-through
+// is the step a fake-item test can't otherwise reach. Returns null for a
+// whitespace-only run, which pdf.js emits for the gaps between real text and
+// which would otherwise show up as an empty "column" during row-grouping.
+function pdfTextItemToPoint(it, pageNum, viewportHeight) {
+  if (!it.str || it.str.trim() === '') {
+    return null;
+  }
+  return {
+    str: it.str,
+    x: it.transform[4],
+    // Flip to a top-down y so page order matches reading order.
+    y: viewportHeight - it.transform[5],
+    page: pageNum,
+    w: it.width,
+    h: it.height
+  };
+}
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var panel = document.getElementById('importPanel');
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { pdfTextItemToPoint: pdfTextItemToPoint };
+}
+
+// Guarded the same way as holdings-import-worker.js: this file is also
+// require()'d directly, unmodified, by test/holdings-import.test.js, and
+// there is no `document` in that context to attach a listener to.
+if (typeof document !== 'undefined') {
+  (function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var panel = document.getElementById('importPanel');
     if (!panel) {
       return; // this page has no import feature
     }
@@ -166,17 +196,14 @@
           var viewport = page.getViewport({ scale: 1 });
 
           content.items.forEach(function (it) {
-            items.push({
-              str: it.str,
-              x: it.transform[4],
-              // Flip to a top-down y so page order matches reading order.
-              y: viewport.height - it.transform[5],
-              page: pageNum,
-              // pdf.js already measures each run; the worker's row/column
-              // grouping uses these instead of guessing from string length.
-              w: it.width,
-              h: it.height
-            });
+            // pdf.js already measures each run; the worker's row/column
+            // grouping uses width/height instead of guessing from string
+            // length, and whitespace-only runs are dropped here rather
+            // than reaching the worker as empty columns.
+            var point = pdfTextItemToPoint(it, pageNum, viewport.height);
+            if (point) {
+              items.push(point);
+            }
           });
         }
 
@@ -388,4 +415,5 @@
       reviewSection.classList.add('d-none');
     });
   });
-})();
+  })();
+}

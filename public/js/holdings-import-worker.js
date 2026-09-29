@@ -214,8 +214,10 @@ function groupPdfItemsIntoRows(items) {
 
   // 2. Within each line, sort left-to-right and split into columns by gap size.
   var GAP_THRESHOLD = 20; // points; a bigger horizontal gap than this = new column
+  var NAME_X_TOLERANCE = 25; // points; how far a wrapped line's start can drift from the name column
   var rows = [];
-  var lastRow = null;
+  var lastRow = null; // the row a wrapped continuation line may merge into
+  var lastRowMeta = null; // { page, y, nameX } for the line lastRow came from
 
   for (var li = 0; li < lines.length; li++) {
     var line = lines[li];
@@ -243,32 +245,54 @@ function groupPdfItemsIntoRows(items) {
     });
 
     // A holdings row candidate needs at least a name-like column and a
-    // number-like column. A line that doesn't (page headers, footers,
-    // the report's own column headings) is simply not treated as a row -
-    // except when it looks like a wrapped continuation of the name just
-    // above it (letters only, no number anywhere on the line), in which
-    // case it is folded into that row instead of silently dropped.
+    // number-like column that is a unit count, not a dollar figure - a
+    // column containing "$" is a value, never the quantity, even when it
+    // is the only number on the line (a market-value or cash-balance line
+    // has no unit count to read).
     var qtyColIndex = -1;
     var qtyValue = null;
+    var dollarColIndex = -1;
     for (var c = 0; c < texts.length; c++) {
+      var hasDollar = texts[c].indexOf('$') !== -1;
       var stripped = texts[c].replace(/[$]/g, '');
       var asNumber = parseFloat(stripped.replace(/,/g, ''));
-      if (!isNaN(asNumber) && stripped.replace(/[\s,.\d]/g, '') === '') {
-        qtyColIndex = c;
-        qtyValue = asNumber;
-        break;
+      var isNumericColumn = !isNaN(asNumber) && stripped.replace(/[\s,.\d]/g, '') === '';
+      if (!isNumericColumn) continue;
+      if (hasDollar) {
+        if (dollarColIndex === -1) {
+          dollarColIndex = c;
+        }
+        continue;
       }
+      qtyColIndex = c;
+      qtyValue = asNumber;
+      break;
     }
 
     var hasAnyDigits = /\d/.test(texts.join(''));
 
-    if (qtyColIndex === -1) {
-      if (lastRow && !hasAnyDigits && texts.some(function (t) { return /[A-Za-z]{3,}/.test(t); })) {
+    if (qtyColIndex === -1 && dollarColIndex === -1) {
+      // Not obviously a data row. It may be a wrapped continuation of the
+      // name directly above it - but only if it is on the same page,
+      // close enough vertically (within ~1.5 line-heights) and starts at
+      // roughly the same x as that row's name column, so a section
+      // heading, a repeated page-2 column heading, or a disclaimer
+      // paragraph below the table does not get folded in just because it
+      // happens to contain only letters. At most one line merges: lastRow
+      // is cleared below regardless, so a second, unrelated text-only
+      // line right after it cannot also merge.
+      if (lastRow && lastRowMeta && !hasAnyDigits &&
+          texts.some(function (t) { return /[A-Za-z]{3,}/.test(t); }) &&
+          line.page === lastRowMeta.page &&
+          Math.abs(line.firstY - lastRowMeta.y) <= 1.5 * medianHeight &&
+          Math.abs(sorted[0].x - lastRowMeta.nameX) <= NAME_X_TOLERANCE) {
         lastRow.name = (lastRow.name + ' ' + texts.join(' ').trim()).trim();
         lastRow.confidence = 'low';
         lastRow.reason = 'This name may include text merged from a wrapped second line - please check it.';
       }
-      continue; // not a data row - most likely a header, footer or page title
+      lastRow = null;
+      lastRowMeta = null;
+      continue;
     }
 
     // Find the ticker first (a short, mostly-uppercase token that can
@@ -279,7 +303,7 @@ function groupPdfItemsIntoRows(items) {
     // the name (the previous approach) grabbed the ticker instead.
     var tickerColIndex = -1;
     for (var t = 0; t < texts.length; t++) {
-      if (t !== qtyColIndex && /^[A-Z0-9]{2,5}$/.test(texts[t]) && /[A-Z]/.test(texts[t])) {
+      if (t !== qtyColIndex && t !== dollarColIndex && /^[A-Z0-9]{2,5}$/.test(texts[t]) && /[A-Z]/.test(texts[t])) {
         tickerColIndex = t;
         break;
       }
@@ -288,7 +312,7 @@ function groupPdfItemsIntoRows(items) {
     var nameColIndex = -1;
     var longest = -1;
     for (var n = 0; n < texts.length; n++) {
-      if (n === qtyColIndex || n === tickerColIndex) continue;
+      if (n === qtyColIndex || n === dollarColIndex || n === tickerColIndex) continue;
       if (/[A-Za-z]{3,}/.test(texts[n]) && texts[n].length > longest) {
         longest = texts[n].length;
         nameColIndex = n;
@@ -296,6 +320,8 @@ function groupPdfItemsIntoRows(items) {
     }
 
     if (nameColIndex === -1) {
+      lastRow = null;
+      lastRowMeta = null;
       continue; // not a data row - most likely a header, footer or page title
     }
 
@@ -307,6 +333,11 @@ function groupPdfItemsIntoRows(items) {
     if (RESERVED_NAME_PATTERN.test(name)) {
       confidence = 'low';
       reason = 'This looks like a total or summary line, not a holding.';
+    } else if (qtyColIndex === -1) {
+      // Only a dollar figure was found - a market value or cash balance,
+      // not a number of units. Kept and flagged rather than guessed at.
+      confidence = 'low';
+      reason = 'Only a dollar value was found here (' + texts[dollarColIndex] + '), no unit quantity.';
     } else if (qtyValue <= 0) {
       confidence = 'low';
       reason = 'Quantity is zero or negative.';
@@ -321,12 +352,13 @@ function groupPdfItemsIntoRows(items) {
     var row = {
       name: name,
       ticker: ticker,
-      quantity: qtyValue,
+      quantity: qtyColIndex === -1 ? null : qtyValue,
       confidence: confidence,
       reason: reason
     };
     rows.push(row);
     lastRow = row;
+    lastRowMeta = { page: line.page, y: line.firstY, nameX: columns[nameColIndex][0].x };
   }
 
   return rows;

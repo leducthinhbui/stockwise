@@ -109,12 +109,48 @@ test('PDF: a wrapped name on its own line is merged into the row above, flagged,
   assert.equal(rows[0].confidence, 'low');
 });
 
-test('PDF: a $-prefixed value is still recognised as the quantity column', function () {
+test('PDF: a $-prefixed value is never read as the unit quantity, even when it is the only number', function () {
   var rows = groupPdfItemsIntoRows(pdfItems([
-    [{ str: 'Some Holding Pty Ltd', x: 10 }, { str: '$4,210.00', x: 250 }]
+    [{ str: 'Cash account', x: 10 }, { str: '$4,210.00', x: 250 }]
   ]));
   assert.equal(rows.length, 1);
-  assert.equal(rows[0].quantity, 4210);
+  // "Cash account" also trips the reserved-name check, so assert on the
+  // quantity/dollar behaviour specifically, not just "some low reason".
+  assert.equal(rows[0].quantity, null);
+});
+
+test('PDF: a real unit-count column is used even when a $ value is also present on the line', function () {
+  var rows = groupPdfItemsIntoRows(pdfItems([
+    [{ str: 'Commonwealth Bank', x: 10 }, { str: '$4,210.00', x: 150 }, { str: '250', x: 300 }]
+  ]));
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].quantity, 250);
+  assert.equal(rows[0].confidence, 'high');
+});
+
+test('PDF: a section heading well below the last row does not merge into it', function () {
+  var rows = groupPdfItemsIntoRows([
+    { str: 'CBA', x: 10, y: 100, page: 1, h: 10, w: 15 },
+    { str: 'COMMONWEALTH BANK', x: 50, y: 100, page: 1, h: 10, w: 100 },
+    { str: '250', x: 250, y: 100, page: 1, h: 10, w: 15 },
+    // 30pt below, well past 1.5 line-heights for a 10pt font - a section
+    // heading, not a wrapped continuation of the row above.
+    { str: 'International Equities', x: 10, y: 130, page: 1, h: 10, w: 100 }
+  ]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].name, 'COMMONWEALTH BANK');
+});
+
+test('PDF: a repeated column heading on the next page does not merge into the last row of the previous page', function () {
+  var rows = groupPdfItemsIntoRows([
+    { str: 'CBA', x: 10, y: 100, page: 1, h: 10, w: 15 },
+    { str: 'COMMONWEALTH BANK', x: 50, y: 100, page: 1, h: 10, w: 100 },
+    { str: '250', x: 250, y: 100, page: 1, h: 10, w: 15 },
+    // Same x and a close y, but a different page.
+    { str: 'Code Name Units Price', x: 50, y: 40, page: 2, h: 10, w: 120 }
+  ]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].name, 'COMMONWEALTH BANK');
 });
 
 test('PDF: a page header/footer line with no number is dropped, not treated as a row', function () {
