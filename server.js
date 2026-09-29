@@ -43,6 +43,14 @@ function str(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+// Every error response carries both keys: validation.js reads `errors`,
+// queries.js reads `error`. One helper keeps that consistent everywhere
+// an error is sent, instead of each route picking a shape on its own.
+function sendError(res, status, messages) {
+  const list = Array.isArray(messages) ? messages : [messages];
+  res.status(status).json({ errors: list, error: list[0] });
+}
+
 /**
  * POST /api/queries
  * Body: { name, email, phone, query }
@@ -86,7 +94,7 @@ app.post('/api/queries', (req, res) => {
   }
 
   if (errors.length > 0) {
-    return res.status(400).json({ errors });
+    return sendError(res, 400, errors);
   }
 
   try {
@@ -102,7 +110,7 @@ app.post('/api/queries', (req, res) => {
     });
   } catch (err) {
     console.error('Failed to save query:', err.message);
-    res.status(500).json({ errors: ['Could not save your query. Please try again.'] });
+    sendError(res, 500, 'Could not save your query. Please try again.');
   }
 });
 
@@ -144,7 +152,7 @@ app.get('/api/queries', (req, res) => {
     });
   } catch (err) {
     console.error('Failed to read queries:', err.message);
-    res.status(500).json({ error: 'Could not read the queries list.' });
+    sendError(res, 500, 'Could not read the queries list.');
   }
 });
 
@@ -156,7 +164,7 @@ app.delete('/api/queries/:id', (req, res) => {
   const id = Number(req.params.id);
 
   if (!Number.isInteger(id)) {
-    return res.status(400).json({ error: 'A valid query id is required.' });
+    return sendError(res, 400, 'A valid query id is required.');
   }
 
   // The existence check runs inside the same try as the delete itself, not
@@ -166,15 +174,51 @@ app.delete('/api/queries/:id', (req, res) => {
   try {
     const existing = db.prepare('SELECT id FROM queries WHERE id = ?').get(id);
     if (!existing) {
-      return res.status(404).json({ error: `No query with id ${id} was found.` });
+      return sendError(res, 404, `No query with id ${id} was found.`);
     }
 
     db.prepare('DELETE FROM queries WHERE id = ?').run(id);
     res.status(200).json({ message: `Query ${id} was deleted.` });
   } catch (err) {
     console.error('Failed to delete query:', err.message);
-    res.status(500).json({ error: 'Could not delete the query.' });
+    sendError(res, 500, 'Could not delete the query.');
   }
+});
+
+// A request under /api that matches none of the routes above (wrong method,
+// mistyped path) never raises an error, so it would otherwise fall through
+// to Express's default HTML "Cannot GET ..." page. Anything outside /api
+// (a mistyped .html link) is left alone - that 404 is for a browser, not
+// for validation.js or queries.js.
+app.use('/api', (req, res) => {
+  sendError(res, 404, 'No such API endpoint.');
+});
+
+// Error handler: without this, a malformed JSON body or an oversized body
+// never reaches a route at all (express.json() rejects it first), and
+// Express's default error page is HTML with a full stack trace, not the
+// JSON shape every route above already returns. This keeps that promise
+// for every request, and keeps the stack trace in the server's own log
+// instead of the response.
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.stack);
+
+  // A response already in progress (e.g. a static file failed partway
+  // through) can't be restarted with res.status(); hand it back to Express.
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  if (err.type === 'entity.parse.failed') {
+    return sendError(res, 400, 'Please send a valid JSON request body.');
+  }
+  if (err.type === 'entity.too.large') {
+    return sendError(res, 413, 'Request body is too large.');
+  }
+  if (err.status >= 400 && err.status < 500) {
+    return sendError(res, err.status, err.message || 'Bad request.');
+  }
+  sendError(res, 500, 'Something went wrong. Please try again.');
 });
 
 app.listen(PORT, () => {

@@ -10,10 +10,12 @@
    "Save holdings" (Step 6 of the proposal: parsed rows are never
    auto-committed).
 
-   File System Access API (window.showOpenFilePicker) is used for CSV, with
-   a plain <input type="file"> + FileReader fallback for PDF and for
-   browsers without File System Access support (Safari and Firefox, as of
-   this trimester) - the feature degrades gracefully rather than failing.
+   File System Access API (window.showOpenFilePicker) is used where the
+   browser supports it, offering both CSV and PDF in the same native
+   picker; a plain <input type="file"> + FileReader fallback covers PDF
+   parsing either way and browsers without File System Access support
+   (Safari and Firefox, as of this trimester) - the feature degrades
+   gracefully rather than failing.
    ========================================================================== */
 
 (function () {
@@ -42,10 +44,9 @@
     var rowCounter = 0;
 
     // --- File System Access API support check -----------------------------
-    // Feature-detected once, not assumed. showOpenFilePicker is used only
-    // for CSV (per the proposal); PDF always goes through the fallback,
-    // since PDF handling here does not depend on which file-open API
-    // supplied the bytes.
+    // Feature-detected once, not assumed. Both formats are offered in the
+    // same picker: which file the user chose is only known after they
+    // choose it, so the picker can't be format-specific ahead of time.
     var supportsFileSystemAccess = typeof window.showOpenFilePicker === 'function';
 
     chooseFileBtn.addEventListener('click', function () {
@@ -91,8 +92,8 @@
       try {
         var handles = await window.showOpenFilePicker({
           types: [{
-            description: 'CSV holdings export',
-            accept: { 'text/csv': ['.csv'] }
+            description: 'Holdings export (CSV or PDF)',
+            accept: { 'text/csv': ['.csv'], 'application/pdf': ['.pdf'] }
           }],
           multiple: false
         });
@@ -115,6 +116,13 @@
         showImportError('Please choose a .csv or .pdf file. StockWise only reads these two formats locally, in your browser.');
         return;
       }
+
+      // A new file replaces the rows from a previous import, rather than
+      // adding to them - otherwise dropping the same statement twice (or
+      // importing two different ones) silently doubles every holding.
+      // Rows added with "Add a holding manually" are a different source
+      // and are left alone.
+      clearImportedRows();
 
       showProgress(10, 'Reading ' + file.name + ' (nothing is uploaded)');
 
@@ -163,7 +171,11 @@
               x: it.transform[4],
               // Flip to a top-down y so page order matches reading order.
               y: viewport.height - it.transform[5],
-              page: pageNum
+              page: pageNum,
+              // pdf.js already measures each run; the worker's row/column
+              // grouping uses these instead of guessing from string length.
+              w: it.width,
+              h: it.height
             });
           });
         }
@@ -201,6 +213,7 @@
     // screen-reader user is not flooded with updates. ----------------------
     function showProgress(percent, label) {
       progressRegion.classList.remove('d-none');
+      progressBar.classList.remove('bg-danger');
       progressBar.style.width = percent + '%';
       progressBar.setAttribute('aria-valuenow', String(percent));
       progressText.textContent = label + '. This file has not been uploaded - it is only being read on this device.';
@@ -219,9 +232,18 @@
     }
 
     // --- Review table (Wireframe C) ----------------------------------------
+    var RESERVED_NAME_PATTERN = /^(total|subtotal|balance|cash|grand total|portfolio value)\b/i;
+
     addManualBtn.addEventListener('click', function () {
-      addRowsToReview([{ name: '', ticker: '', quantity: null, confidence: 'high', reason: null, manual: true }]);
+      addRowsToReview([{ name: '', ticker: '', quantity: null, confidence: 'low', reason: 'Please enter a holding name and quantity.', manual: true }]);
     });
+
+    function clearImportedRows() {
+      reviewBody.querySelectorAll('tr[data-source="import"]').forEach(function (tr) {
+        tr.remove();
+      });
+      updateSummary();
+    }
 
     function addRowsToReview(rows) {
       if (rows.length === 0) return;
@@ -232,32 +254,13 @@
         rowCounter += 1;
         var tr = document.createElement('tr');
         tr.dataset.rowId = String(rowCounter);
-        if (row.confidence === 'low') {
-          tr.classList.add('table-warning');
-        }
+        tr.dataset.source = row.manual ? 'manual' : 'import';
 
-        tr.appendChild(editableCell('name', row.name));
-        tr.appendChild(editableCell('ticker', row.ticker));
-        tr.appendChild(editableCell('quantity', row.quantity === null ? '' : String(row.quantity)));
+        tr.appendChild(editableCell(tr, 'name', row.name));
+        tr.appendChild(editableCell(tr, 'ticker', row.ticker));
+        tr.appendChild(editableCell(tr, 'quantity', row.quantity === null ? '' : String(row.quantity)));
 
         var statusCell = document.createElement('td');
-        if (row.confidence === 'low') {
-          var badge = document.createElement('span');
-          badge.className = 'badge text-bg-warning';
-          badge.textContent = 'Needs review';
-          statusCell.appendChild(badge);
-          if (row.reason) {
-            var reasonText = document.createElement('div');
-            reasonText.className = 'small text-body-secondary mt-1';
-            reasonText.textContent = row.reason;
-            statusCell.appendChild(reasonText);
-          }
-        } else {
-          var goodBadge = document.createElement('span');
-          goodBadge.className = 'badge text-bg-success';
-          goodBadge.textContent = 'Included';
-          statusCell.appendChild(goodBadge);
-        }
         tr.appendChild(statusCell);
 
         var actionCell = document.createElement('td');
@@ -273,12 +276,13 @@
         tr.appendChild(actionCell);
 
         reviewBody.appendChild(tr);
+        setRowStatus(tr, row.confidence, row.reason);
       });
 
       updateSummary();
     }
 
-    function editableCell(field, value) {
+    function editableCell(tr, field, value) {
       var td = document.createElement('td');
       var input = document.createElement('input');
       input.type = field === 'quantity' ? 'number' : 'text';
@@ -286,8 +290,72 @@
       input.value = value;
       input.setAttribute('aria-label', field.charAt(0).toUpperCase() + field.slice(1));
       input.dataset.field = field;
+      // Editing a flagged row should be able to clear the flag (and a
+      // clean row can be edited into a bad one) - re-checked live rather
+      // than only ever reflecting whatever the parser decided at import
+      // time.
+      input.addEventListener('input', function () {
+        revalidateRow(tr);
+      });
       td.appendChild(input);
       return td;
+    }
+
+    // Plain field-level checks, used once a row is edited by hand. This is
+    // deliberately simpler than the parser's own reasons (extra columns
+    // found, etc.) - those were about how the row was read; this is about
+    // whether the row, as it now stands, looks like a real holding.
+    function revalidateRow(tr) {
+      var name = tr.querySelector('[data-field="name"]').value.trim();
+      var qtyRaw = tr.querySelector('[data-field="quantity"]').value.trim();
+      var quantity = parseFloat(qtyRaw);
+
+      var confidence = 'high';
+      var reason = null;
+      if (name === '') {
+        confidence = 'low';
+        reason = 'Please enter a holding name.';
+      } else if (RESERVED_NAME_PATTERN.test(name)) {
+        confidence = 'low';
+        reason = 'This looks like a total or summary line, not a holding.';
+      } else if (qtyRaw === '' || isNaN(quantity)) {
+        confidence = 'low';
+        reason = 'Please enter a quantity.';
+      } else if (quantity <= 0) {
+        confidence = 'low';
+        reason = 'Quantity must be greater than zero.';
+      }
+
+      setRowStatus(tr, confidence, reason);
+      updateSummary();
+    }
+
+    function setRowStatus(tr, confidence, reason) {
+      tr.classList.toggle('table-warning', confidence === 'low');
+      var statusCell = tr.children[3];
+      statusCell.innerHTML = '';
+
+      if (confidence === 'low') {
+        var badge = document.createElement('span');
+        badge.className = 'badge text-bg-warning';
+        badge.textContent = 'Needs review';
+        statusCell.appendChild(badge);
+        if (reason) {
+          var reasonText = document.createElement('div');
+          reasonText.className = 'small text-body-secondary mt-1';
+          reasonText.textContent = reason;
+          statusCell.appendChild(reasonText);
+        }
+      } else {
+        // "Parsed", not "Included": this only means the checks StockWise
+        // runs found nothing wrong, not that the row is guaranteed
+        // correct - especially for a PDF, where there is no structure to
+        // check against beyond column count and simple name/number shape.
+        var goodBadge = document.createElement('span');
+        goodBadge.className = 'badge text-bg-success';
+        goodBadge.textContent = 'Parsed';
+        statusCell.appendChild(goodBadge);
+      }
     }
 
     function updateSummary() {
@@ -297,6 +365,11 @@
         ? 'No holdings in this import yet.'
         : rowEls.length + (rowEls.length === 1 ? ' holding' : ' holdings') + ' ready to review' +
           (needsReview > 0 ? ', ' + needsReview + ' needs a closer look' : '') + '.';
+
+      // Nothing flagged "Needs review" can be saved silently - the user
+      // must fix it or remove the row first, rather than the flag being
+      // informational only.
+      saveBtn.disabled = rowEls.length === 0 || needsReview > 0;
     }
 
     // --- Save (Step 4 of the proposal): nothing is added to the account
@@ -307,7 +380,7 @@
     // the manual-entry consent checkboxes already on this page govern. -----
     saveBtn.addEventListener('click', function () {
       var rows = reviewBody.querySelectorAll('tr');
-      if (rows.length === 0) {
+      if (rows.length === 0 || saveBtn.disabled) {
         return;
       }
       savedBanner.classList.remove('d-none');
