@@ -247,6 +247,17 @@ worker.addEventListener('message', function (event) {
         the interaction itself: the moment nothing can be auto-committed past, matching what the
         page's existing consent checkboxes already govern for manually-typed holdings.
       </p>
+      <p>
+        A new import replaces the previous one's rows, rather than adding to them &mdash; dropping the
+        same statement twice, or a second statement, does not silently double every holding. This is a
+        deliberate trade-off, not an oversight: it means someone holding shares at two different brokers
+        cannot import both statements into one review, only one at a time before saving. Doubling was the
+        worse failure mode of the two, so replacing is the default here, but it is a real limitation of
+        this prototype, not a solved case. The replace itself only happens once new rows have actually
+        arrived (right before they are added to the table) &mdash; not the moment a new file is dropped
+        &mdash; so a second import that fails to parse (a corrupt file, the wrong format) leaves the first
+        import's rows, edits included, exactly where they were.
+      </p>
 
       <h2>Usability, accessibility and performance</h2>
       <div class="row g-4">

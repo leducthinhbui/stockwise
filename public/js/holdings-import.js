@@ -149,13 +149,6 @@ if (typeof document !== 'undefined') {
         return;
       }
 
-      // A new file replaces the rows from a previous import, rather than
-      // adding to them - otherwise dropping the same statement twice (or
-      // importing two different ones) silently doubles every holding.
-      // Rows added with "Add a holding manually" are a different source
-      // and are left alone.
-      clearImportedRows();
-
       showProgress(10, 'Reading ' + file.name + ' (nothing is uploaded)');
 
       if (isCsv) {
@@ -233,6 +226,12 @@ if (typeof document !== 'undefined') {
         showProgress(msg.percent, 'Parsing…');
       } else if (msg.type === 'result') {
         finishProgress(msg.rows);
+        // Only replace the previous import's rows once new ones have
+        // actually arrived - clearing before the file was even read meant
+        // a failed re-import (a corrupt or scanned PDF, the wrong CSV)
+        // wiped the earlier rows, edits included, and replaced them with
+        // nothing.
+        clearImportedRows();
         addRowsToReview(msg.rows);
       }
     }

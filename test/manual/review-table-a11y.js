@@ -9,13 +9,17 @@
    the manual checklist in test/manual/review-table-a11y-checklist.md,
    which covers what this script can't.
 
+   Also covers one data-integrity case that doesn't need a screen reader
+   to check, just a real (async) file drop: a failed re-import must not
+   wipe the previous import's rows.
+
    How to run: open http://localhost:3000/register.html in a browser,
    open DevTools (Cmd+Opt+I), paste this whole file into the Console, and
    press Enter. It logs one line per check with a pass/fail marker and
    ends with a summary. Re-run any time holdings-import.js changes to
    confirm none of this quietly broke.
 */
-(function () {
+(async function () {
   'use strict';
 
   var results = [];
@@ -104,6 +108,46 @@
   onlyRow.querySelector('.btn-outline-danger').click();
   check('removing the only row moves focus to the review heading',
     document.activeElement.id, 'reviewHeading');
+
+  // 6. A failed re-import must not wipe the previous import's rows. Drop a
+  // real CSV, wait for it to land, then drop a corrupt PDF (real bytes
+  // pdf.js will genuinely reject, not a mocked failure) and confirm the
+  // earlier row is still there once the error is shown.
+  function dropFile(file) {
+    var dt = new DataTransfer();
+    dt.items.add(file);
+    var dropZone = document.getElementById('importDropZone');
+    var ev = new DragEvent('drop', { bubbles: true, cancelable: true });
+    Object.defineProperty(ev, 'dataTransfer', { value: dt });
+    dropZone.dispatchEvent(ev);
+  }
+  function waitFor(conditionFn, timeoutMs) {
+    return new Promise(function (resolve, reject) {
+      var start = Date.now();
+      (function poll() {
+        if (conditionFn()) return resolve();
+        if (Date.now() - start > timeoutMs) return reject(new Error('timed out waiting'));
+        setTimeout(poll, 50);
+      })();
+    });
+  }
+
+  document.querySelectorAll('#reviewBody tr').forEach(function (tr) { tr.remove(); });
+  var progressBar = document.getElementById('importProgressBar');
+
+  dropFile(new File(['name,ticker,quantity\nCommonwealth Bank,CBA,250\n'], 'holdings.csv', { type: 'text/csv' }));
+  try {
+    await waitFor(function () { return document.querySelectorAll('#reviewBody tr').length === 1; }, 3000);
+  } catch (e) { /* checked below regardless */ }
+  check('a valid CSV import lands one row', document.querySelectorAll('#reviewBody tr').length, 1);
+
+  dropFile(new File(['this is not a real pdf'], 'broken.pdf', { type: 'application/pdf' }));
+  try {
+    await waitFor(function () { return progressBar.classList.contains('bg-danger'); }, 3000);
+  } catch (e) { /* checked below regardless */ }
+  check('a failed re-import shows an error', progressBar.classList.contains('bg-danger'), true);
+  check('a failed re-import does not wipe the previous import\'s row',
+    document.querySelectorAll('#reviewBody tr').length, 1);
 
   var passed = results.filter(function (r) { return r.pass; }).length;
   console.log('\n' + passed + ' / ' + results.length + ' checks passed.');
