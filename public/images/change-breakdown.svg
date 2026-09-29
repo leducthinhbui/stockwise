@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#eef3f9"/>
+  <rect width="640" height="360" fill="#141a18"/>
   <g transform="translate(320.0,180.0)">
 
-    <rect x="-95" y="-10" width="44" height="70" rx="4" fill="#0a58ca" opacity="0.5"/>
-    <rect x="-95" y="-45" width="44" height="105" rx="4" fill="none" stroke="#0a58ca" stroke-width="2" stroke-dasharray="3 4"/>
-    <path d="M -35 -20 L 35 -20" stroke="#0b2545" stroke-width="4" marker-end="url(#arrow2)"/>
-    <rect x="51" y="-55" width="44" height="115" rx="4" fill="#0b6e47"/>
+    <rect x="-95" y="-10" width="44" height="70" rx="4" fill="#4d8fd6" opacity="0.5"/>
+    <rect x="-95" y="-45" width="44" height="105" rx="4" fill="none" stroke="#4d8fd6" stroke-width="2" stroke-dasharray="3 4"/>
+    <path d="M -35 -20 L 35 -20" stroke="#c5cdc9" stroke-width="4" marker-end="url(#arrow2)"/>
+    <rect x="51" y="-55" width="44" height="115" rx="4" fill="#00d18f"/>
     <defs>
       <marker id="arrow2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-        <path d="M0,0 L8,4 L0,8 Z" fill="#0b2545"/>
+        <path d="M0,0 L8,4 L0,8 Z" fill="#c5cdc9"/>
       </marker>
     </defs>
   </g>

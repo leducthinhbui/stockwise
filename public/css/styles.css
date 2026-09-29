@@ -1,10 +1,12 @@
 /* ==========================================================================
    StockWise - site-wide styles
    SIT774 Task 5.2D (Website Project, Part 1 - draft pages)
-
-   Bootstrap 5.3.8 does most of the layout work. This sheet holds the
-   site-specific rules Bootstrap's utilities do not cover, plus a small
-   number of deliberate accessibility defaults.
+   Restyled to a dark theme in Task 10.3HD, matching an earlier build of this
+   same project. Bootstrap's own dark mode (data-bs-theme="dark" on <html>,
+   set on every page) supplies sensible dark defaults for every component -
+   cards, forms, tables, alerts, badges - so this sheet only needs to define
+   the brand's own colours and a handful of custom classes on top of that,
+   not re-skin every Bootstrap component by hand.
 
    Accessibility decisions recorded here so they are not lost later:
    - Body text is set slightly larger than the browser default, in rem, so it
@@ -17,31 +19,98 @@
 
 /* --- Brand colours -------------------------------------------------------- */
 :root {
-  --sw-navy: #0b2545;    /* white text on navy      = 15.4:1  (AAA) */
-  --sw-blue: #0a58ca;    /* white text on this blue = 6.44:1  (AA)  */
-  --sw-accent: #0b6e47;  /* white text on green     = 6.30:1  (AA)  */
+  --sw-bg: #0b0f0e;            /* page background */
+  --sw-surface: #141a18;       /* cards, form fields: one step up from bg */
+  --sw-border: #262d2a;        /* dividers, card/input borders */
+  --sw-text: #eef2f0;          /* body text on bg    = 17.08:1 (AAA) */
+  --sw-muted: #8a938f;         /* secondary text on bg = 6.11:1 (AA)  */
+  --sw-accent: #00d18f;        /* headings/links on bg = 9.66:1 (AAA) */
+  --sw-accent-soft: rgba(0, 209, 143, 0.12);
+  --sw-btn-text: #04140f;      /* text on accent-green buttons = 9.46:1 (AAA);
+                                   white on this green is only 2:1, so dark
+                                   text is used instead, not the Bootstrap
+                                   default. */
 
-  /* Darken Bootstrap's primary so white button text has a real margin.
-     Bootstrap's stock #0d6efd measures exactly 4.50:1 with white, which is a
-     bare pass with no room for error. */
-  --bs-primary: var(--sw-blue);
-  --bs-primary-rgb: 10, 88, 202;
-  --bs-link-color: #0a58ca;
-  --bs-link-color-rgb: 10, 88, 202;
-  --bs-link-hover-color: #084298;
+  /* Kept for anything still referencing the old names. */
+  --sw-navy: var(--sw-bg);
+  --sw-blue: var(--sw-accent);
+
+  --bs-body-bg: var(--sw-bg);
+  --bs-body-color: var(--sw-text);
+  --bs-border-color: var(--sw-border);
+  --bs-secondary-color: var(--sw-muted);
+  --bs-tertiary-bg: var(--sw-surface);
+
+  --bs-primary: var(--sw-accent);
+  --bs-primary-rgb: 0, 209, 143;
+  --bs-link-color: var(--sw-accent);
+  --bs-link-color-rgb: 0, 209, 143;
+  --bs-link-hover-color: #33dba5;
+}
+
+body {
+  background-color: var(--sw-bg);
+  color: var(--sw-text);
 }
 
 .btn-primary {
-  --bs-btn-bg: var(--sw-blue);
-  --bs-btn-border-color: var(--sw-blue);
-  --bs-btn-hover-bg: #084298;
-  --bs-btn-hover-border-color: #084298;
-  --bs-btn-active-bg: #084298;
-  --bs-btn-active-border-color: #084298;
+  --bs-btn-color: var(--sw-btn-text);
+  --bs-btn-bg: var(--sw-accent);
+  --bs-btn-border-color: var(--sw-accent);
+  --bs-btn-hover-color: var(--sw-btn-text);
+  --bs-btn-hover-bg: #33dba5;
+  --bs-btn-hover-border-color: #33dba5;
+  --bs-btn-active-color: var(--sw-btn-text);
+  --bs-btn-active-bg: #33dba5;
+  --bs-btn-active-border-color: #33dba5;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--sw-accent);
+  --bs-btn-border-color: var(--sw-accent);
+  --bs-btn-hover-color: var(--sw-btn-text);
+  --bs-btn-hover-bg: var(--sw-accent);
+  --bs-btn-hover-border-color: var(--sw-accent);
+  --bs-btn-active-color: var(--sw-btn-text);
+  --bs-btn-active-bg: var(--sw-accent);
 }
 
 .bg-primary {
-  background-color: var(--sw-blue) !important;
+  background-color: var(--sw-bg) !important;
+}
+
+.bg-primary-subtle {
+  background-color: var(--sw-surface) !important;
+  color: var(--sw-text) !important;
+}
+
+.bg-dark,
+.bg-secondary-subtle,
+.bg-light,
+.bg-white {
+  background-color: var(--sw-surface) !important;
+  color: var(--sw-text) !important;
+}
+
+/* Bootstrap's table variants (.table-light here) set --bs-table-bg on the
+   <thead> itself, but the actual <th>/<td> cells are two levels down
+   (thead > tr > th) and get their own background-color from a separate,
+   more specific Bootstrap rule that does not pick up the inherited
+   variable. Targeting the cells directly sidesteps the whole cascade. */
+.table-light th,
+.table-light td {
+  background-color: var(--sw-surface) !important;
+  color: var(--sw-text) !important;
+  border-color: var(--sw-border) !important;
+}
+
+/* Code samples on the import tutorial page use .bg-light too, but read
+   better as a slightly darker, monospace-friendly block than the page's
+   general surface colour. */
+pre.bg-light {
+  background-color: #0f1513 !important;
+  border: 1px solid var(--sw-border);
+  color: var(--sw-text) !important;
 }
 
 /* --- Readable defaults for everyone --------------------------------------- */
@@ -58,22 +127,14 @@ body {
    can tell where they are, so it is made stronger than the default rather
    than being switched off for appearance.
 
-   The base colour is the brand blue, because most of the interactive elements
-   on this site - every form field, card link and table link - sit on a white
-   background. Measured at 6.44:1 there, well over the 3:1 WCAG asks for the
-   boundary of a user interface component.
-
-   An amber outline is used instead on the dark navy sections, where the blue
-   would be too close to the background to see. Measured at 9.38:1 on navy. */
+   One colour works everywhere now the whole page shares the same dark
+   background (utility bar, page banner and footer are no longer a
+   distinct navy block against a white body) - the accent green measures
+   9.66:1 against the page background, comfortably over the 3:1 WCAG asks
+   for the boundary of a user interface component. */
 :focus-visible {
-  outline: 3px solid var(--sw-blue);
+  outline: 3px solid var(--sw-accent);
   outline-offset: 2px;
-}
-
-.utility-bar :focus-visible,
-.page-banner :focus-visible,
-footer :focus-visible {
-  outline-color: #ffbf47;
 }
 
 /* --- Skip link ------------------------------------------------------------- */
@@ -83,8 +144,12 @@ footer :focus-visible {
 }
 
 /* --- Utility bar above the main navigation -------------------------------- */
+/* No longer a distinct colour block: the reference dark build runs the same
+   background straight through the utility bar, nav and hero, with a hairline
+   border to mark the boundary instead of a colour change. */
 .utility-bar {
-  background-color: var(--sw-navy);
+  background-color: var(--sw-bg);
+  border-bottom: 1px solid var(--sw-border);
 }
 
 .utility-bar .brand-name {
@@ -95,8 +160,9 @@ footer :focus-visible {
 
 /* --- Page banner ----------------------------------------------------------- */
 .page-banner {
-  background-color: var(--sw-navy);
-  color: #fff;
+  background-color: var(--sw-bg);
+  color: var(--sw-text);
+  border-bottom: 1px solid var(--sw-border);
 }
 
 /* --- The non-advice promise ------------------------------------------------ */
@@ -104,22 +170,24 @@ footer :focus-visible {
    read rather than skipped. */
 .promise {
   border-left: 6px solid var(--sw-accent);
-  background-color: #f1f8f4;
+  background-color: var(--sw-surface);
+  color: var(--sw-text);
 }
 
 /* --- Worked example on the home page --------------------------------------- */
 .worked-example {
-  border: 1px solid #c9d6e2;
-  background-color: #f7fafc;
+  border: 1px solid var(--sw-border);
+  background-color: var(--sw-surface);
+  color: var(--sw-text);
 }
 
 .worked-example dt {
-  color: var(--sw-navy);
+  color: var(--sw-accent);
 }
 
 /* --- Cards ----------------------------------------------------------------- */
 .feature-card .card-title {
-  color: var(--sw-navy);
+  color: var(--sw-accent);
 }
 
 .card-img-top {
@@ -128,6 +196,9 @@ footer :focus-visible {
 }
 
 /* --- Numbered steps -------------------------------------------------------- */
+/* Filled with the soft accent tint rather than solid green, matching the
+   reference build's numbered circles: the accent colour carries the number
+   itself, rather than white text on a solid green disc. */
 .step-number {
   display: inline-flex;
   align-items: center;
@@ -135,8 +206,8 @@ footer :focus-visible {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background-color: var(--sw-accent);
-  color: #fff;
+  background-color: var(--sw-accent-soft);
+  color: var(--sw-accent);
   font-weight: 700;
 }
 
@@ -148,19 +219,29 @@ footer :focus-visible {
 }
 
 /* --- Form field borders ---------------------------------------------------- */
-/* Bootstrap's default input border (#dee2e6 on white) measures about 1.3:1,
-   under the 3:1 WCAG asks for the boundary of a user interface component.
-   Darkened so the edge of every field is actually visible. */
+/* Bootstrap's dark-mode input already gets a visible border and a surface
+   background from data-bs-theme="dark"; this keeps it on-brand and confirms
+   it still clears 3:1 against the surface it sits on (measured 3.76:1). */
 .form-control,
 .form-select {
+  background-color: var(--sw-surface);
   border-color: #6c757d;
+  color: var(--sw-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--sw-surface);
+  color: var(--sw-text);
 }
 
 /* --- Required field marker ------------------------------------------------- */
 /* The marker is shown visually AND the input carries the required attribute,
-   so sighted and screen reader users get the same information. */
+   so sighted and screen reader users get the same information. The old red
+   (#a4131a, chosen for a white background) drops to 2.47:1 on the new dark
+   background, so it is replaced with a brighter red that clears 4.5:1. */
 .required-marker {
-  color: #a4131a;
+  color: #ff6b6b;
   font-weight: 700;
 }
 
@@ -178,8 +259,8 @@ footer :focus-visible {
 /* --- Footer ---------------------------------------------------------------- */
 /* Bootstrap gives every <a> its own link colour, which beats an inherited
    .text-white on the parent. Setting the colour here explicitly is what stops
-   the footer links falling back to the default blue, which would measure only
-   3.4:1 on this background. Measured at 11.7:1 as set below. */
+   the footer links falling back to Bootstrap's dark-mode link blue.
+   Re-measured against the new surface background: 13.42:1. */
 footer a {
   color: #cfe2ff;
 }
@@ -228,6 +309,6 @@ footer a:focus {
 }
 
 .import-drop-zone.is-dragover {
-  background-color: var(--bs-primary-bg-subtle, #e7f1ff);
-  border-color: var(--sw-blue);
+  background-color: var(--sw-accent-soft);
+  border-color: var(--sw-accent);
 }

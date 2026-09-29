@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#eef3f9"/>
+  <rect width="640" height="360" fill="#141a18"/>
   <g transform="translate(320.0,180.0)">
 
-    <path d="M 0 -55 C -30 -75, -80 -70, -95 -55 L -95 60 C -80 45, -30 40, 0 60 Z" fill="#0a58ca"/>
-    <path d="M 0 -55 C 30 -75, 80 -70, 95 -55 L 95 60 C 80 45, 30 40, 0 60 Z" fill="#0b6e47"/>
-    <line x1="0" y1="-50" x2="0" y2="58" stroke="#0b2545" stroke-width="3"/>
+    <path d="M 0 -55 C -30 -75, -80 -70, -95 -55 L -95 60 C -80 45, -30 40, 0 60 Z" fill="#4d8fd6"/>
+    <path d="M 0 -55 C 30 -75, 80 -70, 95 -55 L 95 60 C 80 45, 30 40, 0 60 Z" fill="#00d18f"/>
+    <line x1="0" y1="-50" x2="0" y2="58" stroke="#c5cdc9" stroke-width="3"/>
   </g>
 </svg>
