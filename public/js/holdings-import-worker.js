@@ -42,7 +42,14 @@ if (typeof self !== 'undefined' && self.addEventListener) {
 
     if (msg.type === 'pdf') {
       self.postMessage({ type: 'progress', percent: 60 });
+      var groupStart = performance.now();
       var rows2 = groupPdfItemsIntoRows(msg.items);
+      var groupMs = performance.now() - groupStart;
+      // Logged from inside the worker (visible in DevTools under its own
+      // thread), so it can be compared against the main-thread extraction
+      // time holdings-import.js logs for the same import.
+      console.log('[timing] worker row-grouping (' + msg.items.length + ' items): ' +
+        groupMs.toFixed(1) + 'ms, vs ' + (msg.extractMs || 0).toFixed(1) + 'ms main-thread extraction');
       self.postMessage({ type: 'result', rows: rows2 });
       return;
     }

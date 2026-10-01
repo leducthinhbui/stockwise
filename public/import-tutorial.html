@@ -220,15 +220,29 @@ worker.addEventListener('message', function (event) {
         not just of the parser.
       </p>
 
-      <h3>A note on where pdf.js's own worker fits in</h3>
+      <h3>A note on where pdf.js's own worker fits in &mdash; and a correction</h3>
       <p>
         pdf.js already manages its own internal worker (<code>pdf.worker.js</code>) for the expensive
         binary PDF parsing step. Rather than nesting a second copy of pdf.js inside
         <code>holdings-import-worker.js</code> &mdash; a fragile worker-inside-a-worker setup for no real
         benefit &mdash; this implementation calls pdf.js from the main thread (it is already off-thread
         for the heavy part), and hands only the lightweight extracted text items to the custom worker,
-        which does the row-grouping heuristic. That CPU-bound step has no built-in pdf.js function to do
-        it, and is the part actually worth moving off the main thread here.
+        which does the row-grouping heuristic.
+      </p>
+      <p>
+        An earlier version of this page claimed that row-grouping was &ldquo;the part actually worth
+        moving off the main thread,&rdquo; implying it was the expensive step. A code review questioned
+        that without a measurement behind it, and timing both stages
+        (<code>performance.now()</code>, logged to the console in <code>holdings-import.js</code> and
+        <code>holdings-import-worker.js</code>) showed the opposite: for a 5-page, 500-row synthetic
+        statement, the main-thread loop that calls <code>page.getTextContent()</code> for each page took
+        15.6ms, while the worker's row-grouping ran in 0.8ms &mdash; about 5% of the extraction time. The
+        custom worker still exists for a real reason (a genuinely large statement's grouping step would
+        scale with row count, and running it on the main thread would still briefly block input), but the
+        claim that it is <em>the</em> expensive part does not hold up, and this page should not have said
+        so without checking. This was only measured on one small, synthetic file, not a real multi-page
+        broker statement with hundreds of pages - a real measurement at that scale could look different,
+        and is a known gap in this testing, not just an assumption corrected.
       </p>
 
       <h2>The review table: nothing is auto-committed</h2>

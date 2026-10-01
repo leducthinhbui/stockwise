@@ -8,8 +8,29 @@
   <meta name="description" content="Create a StockWise account.">
   <title>StockWise &mdash; Register</title>
 
-  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Enforces this page's own "nothing is uploaded" claim at the browser
+       level, not just by not writing any upload code: connect-src 'none'
+       means no fetch/XHR/WebSocket can succeed from this page at all, so a
+       future bug (or a compromised dependency) that tried to send a parsed
+       statement somewhere would be blocked outright, not just unlikely.
+       style-src allows 'unsafe-inline' for this page's own inline style="
+       attributes (e.g. the progress bar's width) - refactoring those to
+       classes was judged out of scope for this task. worker-src allows
+       blob: because pdf.js creates its own internal worker from a blob
+       URL (confirmed live: without blob:, the browser blocks it with
+       "Creating a worker from 'blob:...' violates ... worker-src 'self'"
+       and PDF parsing fails) - holdings-import-worker.js itself still
+       loads from a same-origin file, which 'self' alone covers. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; connect-src 'none'; worker-src 'self' blob:; img-src 'self' data:; base-uri 'self'; form-action 'self'">
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN. integrity/crossorigin: if
+       jsDelivr were ever compromised or served a tampered file, the browser
+       refuses to apply it rather than silently running altered CSS. (This
+       hash is specific to this page; the same two CDN tags are unprotected
+       on StockWise's other pages - out of scope for this task's feature,
+       but a real gap worth fixing site-wide separately.) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <!-- Site-wide styles shared by all six pages -->
   <link href="css/styles.css" rel="stylesheet">
 </head>
@@ -440,18 +461,24 @@
   </a>
 
   <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal on the home page -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   <!-- pdf.js: used only by holdings-import.js, to read PDF statements locally
        (Task 10.3HD). A module script is deferred by default (runs after the
        document is parsed, before DOMContentLoaded), and holdings-import.js
        below only touches window.pdfjsLib later, inside a click handler, not
-       at load time - so it is never called before this has set it. -->
-  <script type="module">
-    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs";
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
-    window.pdfjsLib = pdfjsLib;
-  </script>
+       at load time - so it is never called before this has set it.
+
+       Kept in its own external file (js/pdfjs-loader.js), not inline, so
+       the page's CSP (script-src 'self' ...) can allow it without an
+       inline-script hash or 'unsafe-inline'. No integrity attribute on the
+       pdf.js CDN import itself: it's a bare `import` statement inside that
+       module, not a <script src> or <link>, and the HTML `integrity`
+       attribute only applies to those - the newer `import ... with
+       { integrity: "..." }` syntax exists but isn't supported across all
+       current browsers, so adding it here would silently do nothing in
+       some of them. -->
+  <script type="module" src="js/pdfjs-loader.js"></script>
   <!-- "Import your holdings" feature (Task 10.3HD) -->
   <script src="js/holdings-import.js"></script>
   <!-- Register form confirmation (prototype only, no real account created) -->

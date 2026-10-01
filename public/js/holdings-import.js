@@ -180,7 +180,20 @@ if (typeof document !== 'undefined') {
       try {
         showProgress(20, 'Opening ' + file.name);
         var arrayBuffer = await file.arrayBuffer();
-        var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        // isEvalSupported: false - a user-supplied PDF is untrusted input;
+        // this disables pdf.js's internal use of eval() for a font-rendering
+        // optimisation, closing off that code path entirely rather than
+        // relying only on the library's own patched version.
+        var pdf = await pdfjsLib.getDocument({ data: arrayBuffer, isEvalSupported: false }).promise;
+
+        // Timed rather than assumed: a code review questioned whether the
+        // row-grouping worker is really "the part actually worth moving
+        // off the main thread" (the comment two lines below used to claim
+        // this outright), since the per-page getTextContent() loop here,
+        // not the grouping step, might be where the real time goes. Logged
+        // to the console so the claim in import-tutorial.html is checkable
+        // against a real run, not just this one small sample.
+        var extractStart = performance.now();
 
         var items = [];
         for (var pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
@@ -202,8 +215,12 @@ if (typeof document !== 'undefined') {
           });
         }
 
+        var extractMs = performance.now() - extractStart;
+        console.log('[timing] main-thread PDF extraction (' + pdf.numPages + ' page(s), ' +
+          items.length + ' text runs): ' + extractMs.toFixed(1) + 'ms');
+
         showProgress(55, 'Grouping ' + items.length + ' text runs into rows');
-        sendToWorker({ type: 'pdf', items: items });
+        sendToWorker({ type: 'pdf', items: items, extractMs: extractMs });
       } catch (err) {
         showImportError('Could not read that PDF: ' + err.message);
       }
