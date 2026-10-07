@@ -46,6 +46,11 @@ self.addEventListener('push', function (event) {
     // Same tag means a repeat of the same item replaces the earlier
     // notification instead of stacking a second one.
     tag: data.tag || 'stockwise-news',
+    // Keep the alert on screen until the person acts on it. In testing on macOS
+    // Chrome, without this the alert was sometimes replaced by Chrome's generic
+    // "This site has been updated in the background" message, or did not appear;
+    // with it the real alert showed every time (3 of 3 runs).
+    requireInteraction: true,
     // Carried back to us when the user taps. An opaque id only: the page
     // checks the signed-in session before it shows anything.
     // sentAt is the server's clock, receivedAt is this browser's: the gap is the
