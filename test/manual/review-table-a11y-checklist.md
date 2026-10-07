@@ -2,72 +2,48 @@
 
 Covers what `review-table-a11y.js` can't: real Tab order, Enter/Space
 activation, and whether a screen reader actually announces what the code
-sets up to announce. Run this yourself; do not fill in results you haven't
-observed.
+sets up to announce.
 
-**Date run:**
-**Browser / version:**
-**macOS version:**
-**Screen reader used:** VoiceOver (Cmd+F5)
+**How to fill this in:** for each line, circle YES or NO based on what
+really happens. Only add a note if something felt off or surprising -
+otherwise YES/NO is enough. Don't fill in results you haven't observed.
 
-## Part 1 — keyboard only (mouse unplugged or untouched)
+**Date run:** 2 Oct 2026
+**Browser / version:** Chromium (Claude's built-in browser pane, real keyboard events via the OS-level key-press API - not simulated clicks)
+**macOS version:** n/a for this pass (browser-only; see note below)
 
-For each step: what you did, what you expected, what actually happened.
+**Who ran this:** Claude, not the student - run because the student's own screen recording of this part didn't save correctly and they asked for it to be done so testing wasn't skipped entirely. Flagged here plainly rather than left unstated. The student still needs to do Part 2 (VoiceOver) themselves, since that needs a real screen reader, which this pass could not use.
 
-1. Tab to "Choose statement file" and activate it with Enter/Space. Does the
-   native file picker open?
-   - Expected:
-   - Actual:
-2. Cancel the picker, then Tab to "Add a holding manually" and activate it.
-   Does focus land in the new row's Name field?
-   - Expected:
-   - Actual:
-3. Type a name, Tab to Quantity, leave it blank, Tab to Remove, activate it.
-   Does focus land somewhere sensible (there's no next row, so the previous
-   row's Remove button, or the review heading if none is left)?
-   - Expected:
-   - Actual:
-4. Add two more rows. Tab to the second row's Remove button and activate
-   it. Does focus land on the third row's Remove button?
-   - Expected:
-   - Actual:
-5. With a row still flagged "Needs review", Tab to "Save holdings" and
-   activate it. Does focus move to the flagged row's Name field instead of
-   the button doing nothing silently?
-   - Expected:
-   - Actual:
-6. Fix that row (valid name and quantity), Tab to Save, activate it. Does
-   the save banner appear and receive focus?
-   - Expected:
-   - Actual:
+## Part 1 — keyboard only (don't touch the mouse)
 
-## Part 2 — VoiceOver (Cmd+F5 to turn on, Cmd+F5 again to turn off)
+Server running at http://localhost:3000/register.html.
 
-1. Import a CSV (drag a small test file onto the drop zone, or use Choose
-   File). Once parsing finishes, what does VoiceOver say? Does it announce
-   the result ("Found N holdings...") without you having to move focus?
-   - Expected: the result is announced automatically
-   - Actual:
-2. Tab into a row flagged "Needs review". When focus lands on the Name
-   field, does VoiceOver read the reason (e.g. "No holding name found in
-   this row") along with the field?
-   - Expected:
-   - Actual:
-3. Fix that field. Does VoiceOver announce anything at the moment it's
-   fixed, without you needing to move focus again?
-   - Expected: something like "Fixed. N rows need review."
-   - Actual:
-4. Tab to a Remove button. Does VoiceOver say which holding it will remove
-   (e.g. "Remove Commonwealth Bank"), not just "Remove, button"?
-   - Expected:
-   - Actual:
-5. With a row still flagged, Tab to Save and activate it. Does VoiceOver
-   say anything about why saving didn't happen?
-   - Expected:
-   - Actual:
+1. Tab to "Choose statement file", press Enter. File picker opens? **YES** (partial)
+   - Note: The button is reachable by keyboard, clearly shows a visible focus ring, and Enter fires its click handler. Whether the native OS file picker itself then opens could not be confirmed this way - browser automation cannot drive a real OS-level dialog, so this one line is weaker evidence than the rest below.
+2. Cancel it. Tab to "Add a holding manually", press Enter. Cursor lands in the new row's Name box? **YES**
+   - Note: Confirmed via real focus state after a real Enter keypress.
+3. Type a name, Tab past Quantity (leave blank), Tab to Remove, press Enter. Row disappears and focus lands somewhere sensible (not lost)? **YES**
+   - Note: Row removed; focus fell back to the "Review before saving" heading, not lost to the page body.
+4. Add two more rows the same way (3 rows total). Tab to the 2nd row's Remove button, press Enter. Focus lands on the 3rd row's Remove button? **YES**
+   - Note: Confirmed - focus moved to the next remaining row's Remove button, which also had the correct dynamic aria-label.
+5. With a row still flagged "Needs review", Tab to "Save holdings", press Enter. Focus jumps to the flagged row's Name box (not nothing)? **YES**
+   - Note: Save correctly refused with both rows still blank; focus moved to a flagged row's Name field and the status region announced "2 rows need fixing before you can save."
+6. Fix that row properly (name + quantity filled in), Tab to Save, press Enter. Confirmation banner appears? **YES**
+   - Note: Both rows fixed by real typing (Commonwealth Bank/250, BHP Group/180); status region announced "Fixed. Nothing else needs review."; Save then succeeded, banner appeared and received focus.
 
-## Notes
+## Part 2 — VoiceOver (press Cmd+F5 to turn on, Cmd+F5 again to turn off)
 
-Record anything unexpected here, even if it isn't one of the specific
-checks above - a confusing announcement, a focus jump that felt wrong, a
-label that didn't make sense out of context.
+1. Import a CSV file. Once it finishes, does VoiceOver say something like "Found N holdings" on its own, without you moving? YES / NO
+   - Note:
+2. Tab into a row flagged "Needs review", land on Name. Does VoiceOver also read the reason it's flagged? YES / NO
+   - Note:
+3. Fix that field. Does VoiceOver say anything ("Fixed...") right when it's fixed? YES / NO
+   - Note:
+4. Tab to a Remove button. Does it name the holding ("Remove Commonwealth Bank"), not just "Remove, button"? YES / NO
+   - Note:
+5. With a row still flagged, Tab to Save, press Enter. Does VoiceOver explain why nothing saved? YES / NO
+   - Note:
+
+## Anything else surprising
+
+(one or two lines is fine, or leave blank)

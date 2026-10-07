@@ -1,0 +1,102 @@
+{
+  "note": "Results of the audit BEFORE the two fixes (contrast of the delete button; the nav toggle's accessible name). The machine-written file for this run was accidentally overwritten by a later run, so this file is transcribed from that run's saved console output. The after-fix results are in accessibility-audit.json and can be reproduced by running the script.",
+  "results": [
+    {
+      "label": "1. alerts page, signed out",
+      "passes": 40,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "2. alerts page, signed in, alerts off",
+      "passes": 48,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            "#deleteDataBtn"
+          ],
+          "count": 1
+        }
+      ],
+      "incomplete": []
+    },
+    {
+      "label": "3. alerts page, alerts ACTIVE (real push subscription), one item in the list",
+      "passes": 48,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            "#deleteDataBtn"
+          ],
+          "count": 1
+        }
+      ],
+      "incomplete": []
+    },
+    {
+      "label": "4. alerts page at phone width (375 px)",
+      "passes": 48,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            "#deleteDataBtn"
+          ],
+          "count": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "help": "Elements must have their visible text as part of their accessible name",
+          "nodes": [
+            ".navbar-toggler"
+          ],
+          "count": 1
+        }
+      ],
+      "incomplete": []
+    },
+    {
+      "label": "5. explanation page, Free plan (summary and plan note)",
+      "passes": 43,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "6. explanation page, Standard plan (full detail and analyst quote)",
+      "passes": 44,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "7. tutorial page",
+      "passes": 44,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "8. alerts page, browser permission DENIED (the blocked state)",
+      "passes": 48,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            "#deleteDataBtn"
+          ],
+          "count": 1
+        }
+      ],
+      "incomplete": []
+    }
+  ]
+}

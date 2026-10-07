@@ -1,0 +1,51 @@
+{
+  "H5": {
+    "trials": 40,
+    "firstDraftDuplicates": 40,
+    "currentDuplicates": 0
+  },
+  "H6": {
+    "firstDraft": {
+      "ownerAfterAttack": 2,
+      "authAfterAttack": "attacker-auth",
+      "takenOver": true
+    },
+    "current": {
+      "ownerAfterAttack": 1,
+      "authAfterAttack": "victim-auth",
+      "takenOver": false
+    }
+  },
+  "H3": [
+    {
+      "len": 50,
+      "firstDraftBytes": 122,
+      "currentBytes": 145
+    },
+    {
+      "len": 120,
+      "firstDraftBytes": 192,
+      "currentBytes": 215
+    },
+    {
+      "len": 500,
+      "firstDraftBytes": 572,
+      "currentBytes": 217
+    },
+    {
+      "len": 2000,
+      "firstDraftBytes": 2072,
+      "currentBytes": 217
+    },
+    {
+      "len": 4000,
+      "firstDraftBytes": 4072,
+      "currentBytes": 217
+    },
+    {
+      "len": 20000,
+      "firstDraftBytes": 20072,
+      "currentBytes": 217
+    }
+  ]
+}

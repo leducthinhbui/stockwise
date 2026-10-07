@@ -312,3 +312,18 @@ footer a:focus {
   background-color: var(--sw-accent-soft);
   border-color: var(--sw-accent);
 }
+
+
+/* Bootstrap's default danger red is 4.26:1 on this dark background, just under
+   the 4.5:1 that WCAG AA requires for text. Found by the accessibility audit
+   (test/experiments/accessibility-audit.js); this red is 7.63:1. */
+.btn-outline-danger {
+  --bs-btn-color: #ea868f;
+  --bs-btn-border-color: #ea868f;
+  --bs-btn-hover-color: var(--sw-btn-text);
+  --bs-btn-hover-bg: #ea868f;
+  --bs-btn-hover-border-color: #ea868f;
+  --bs-btn-active-color: var(--sw-btn-text);
+  --bs-btn-active-bg: #ea868f;
+  --bs-btn-active-border-color: #ea868f;
+}

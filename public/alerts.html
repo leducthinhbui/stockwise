@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="Manage instant news alerts for the stocks you hold.">
+  <title>StockWise &mdash; My alerts</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; connect-src 'self'; worker-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white active" href="alerts.html" aria-current="page">My alerts</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">My alerts</h1>
+        <p class="lead mb-0">A notification the moment there is news about a stock you hold, in plain English.</p>
+      </div>
+    </div>
+
+    <div class="container py-4">
+
+      <!-- Honesty note: this is a working prototype, not a live news service. -->
+      <div class="alert alert-secondary" role="note">
+        <strong>Prototype for SIT774 Task 10.3HD.</strong> The companies, tickers and news here are
+        invented sample data, and sign-in is a demo choice of two accounts. The alert mechanism
+        (permission, push subscription, delivery, notification) is real.
+      </div>
+
+      <noscript>
+        <div class="alert alert-warning">This page needs JavaScript to manage alerts.</div>
+      </noscript>
+
+      <p id="loadingMessage" role="status">Loading&hellip;</p>
+
+      <!-- ===== Signed out: choose a demo account ===== -->
+      <section id="signedOut" class="d-none" aria-labelledby="signinHeading">
+        <h2 id="signinHeading" class="h4">Choose a demo account</h2>
+        <p>
+          A real site would ask for a password. This prototype offers two accounts so you can see how
+          the plan changes what you can read, and so the server can tie every request to one signed-in
+          person.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn btn-primary" data-user-id="1">Alex Demo (Free plan)</button>
+          <button type="button" class="btn btn-outline-primary" data-user-id="2">Sam Demo (Standard plan)</button>
+        </div>
+        <p id="signinError" class="text-danger mt-2" role="alert"></p>
+      </section>
+
+      <!-- ===== Signed in ===== -->
+      <div id="signedIn" class="d-none">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+          <h2 id="whoamiHeading" class="h5 mb-0" tabindex="-1"></h2>
+          <button type="button" class="btn btn-outline-light btn-sm" id="signOutBtn">Sign out</button>
+        </div>
+
+        <div class="row g-4">
+
+          <!-- Holdings -->
+          <div class="col-lg-6">
+            <section class="card h-100" aria-labelledby="holdingsHeading">
+              <div class="card-body">
+                <h2 id="holdingsHeading" class="h5">Your holdings</h2>
+                <p id="holdingsCount" class="small text-body-secondary"></p>
+                <ul id="holdingsList" class="list-group mb-3"></ul>
+                <form id="addHoldingForm" class="row g-2 align-items-end" novalidate>
+                  <div class="col">
+                    <label for="tickerInput" class="form-label">Add a holding (ticker)</label>
+                    <input id="tickerInput" class="form-control" maxlength="5" autocomplete="off"
+                      aria-describedby="tickerHelp">
+                    <div id="tickerHelp" class="form-text">2 to 5 letters. Sample tickers: SCM, HBK, MRH, PTL, KDC.</div>
+                  </div>
+                  <div class="col-auto">
+                    <button class="btn btn-primary" type="submit">Add</button>
+                  </div>
+                </form>
+                <p id="holdingsMessage" class="small mt-2 mb-0" role="status"></p>
+              </div>
+            </section>
+          </div>
+
+          <!-- Alert permissions: two separate, itemised permissions -->
+          <div class="col-lg-6">
+            <section class="card h-100" aria-labelledby="alertsHeading">
+              <div class="card-body">
+                <h2 id="alertsHeading" class="h5">Alert permissions</h2>
+                <p class="small text-body-secondary">
+                  Two separate choices. You can change either at any time.
+                </p>
+
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="notifyImmediately"
+                    aria-describedby="notifyHelp">
+                  <label class="form-check-label" for="notifyImmediately">
+                    Notify me immediately when there is news about a holding
+                  </label>
+                  <div id="notifyHelp" class="form-text">
+                    Your browser will ask for permission to show notifications.
+                  </div>
+                </div>
+
+                <!-- aria-disabled, not the native "disabled" attribute: a native disabled
+                     checkbox drops out of the Tab order, so a keyboard or screen reader user
+                     would never find it or learn why it does nothing. This one stays
+                     focusable and explains itself through its helper text. -->
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="showOnLock"
+                    aria-disabled="true" aria-describedby="lockHelp">
+                  <label class="form-check-label" for="showOnLock">
+                    Show the holding's name on my lock screen
+                  </label>
+                  <div id="lockHelp" class="form-text"></div>
+                </div>
+
+                <div id="alertState" class="alert alert-secondary mb-2" role="status" aria-live="polite"></div>
+                <button id="retryBtn" class="btn btn-warning btn-sm d-none" type="button">Try again</button>
+
+                <hr>
+                <h3 class="h6">Demo controls (prototype only)</h3>
+                <p class="small text-body-secondary mb-2">
+                  Stands in for &ldquo;news just broke&rdquo;. It releases the next sample item for a stock
+                  you hold, and the real delivery code sends the push.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                  <button id="releaseBtn" class="btn btn-outline-primary btn-sm" type="button">Send me a test alert now</button>
+                  <button id="resetBtn" class="btn btn-outline-light btn-sm" type="button">Reset sample news</button>
+                </div>
+                <p id="demoMessage" class="small mt-2 mb-0" role="status"></p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Account & Privacy: everything granted, in one place -->
+        <section class="mt-4" aria-labelledby="privacyHeading">
+          <h2 id="privacyHeading" class="h5">Account &amp; Privacy</h2>
+          <p>Every alert permission you have given, in one place, so you can review or remove it.</p>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <caption>Alert permissions and data stored for your account</caption>
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">Permission or data</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">What it means</th>
+                </tr>
+              </thead>
+              <tbody id="privacyBody"></tbody>
+            </table>
+          </div>
+          <button id="deleteDataBtn" class="btn btn-outline-danger btn-sm" type="button">
+            Turn everything off and delete my alert data
+          </button>
+          <p id="privacyMessage" class="small mt-2 mb-0" role="status"></p>
+        </section>
+
+        <!-- In-app list: also the fallback for browsers that can't receive push -->
+        <section class="mt-4" aria-labelledby="newsHeading">
+          <h2 id="newsHeading" class="h5">For your portfolio</h2>
+          <p class="small text-body-secondary">
+            Every alert also appears here, so nothing is missed if your browser can't show push notifications.
+          </p>
+          <ul id="newsList" class="list-group"></ul>
+          <p id="newsEmpty" class="text-body-secondary mb-0">No news yet. Use &ldquo;Send me a test alert now&rdquo; above.</p>
+        </section>
+      </div>
+
+    </div>
+    </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+            <li><a href="alerts.html">My alerts</a></li>
+            <li><a href="alerts-tutorial.html">Portfolio News Alerts: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the FAQ accordion above -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+  <script src="js/alerts-state.js"></script>
+  <script src="js/alerts.js"></script>
+
+</body>
+
+</html>

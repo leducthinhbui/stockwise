@@ -1,14 +1,15 @@
 {
   "name": "task05-2d-stockwise-website",
   "version": "1.0.0",
-  "description": "Task 10.2D - Website Project Part 3: database integration",
+  "description": "StockWise: Tasks 10.2D (database integration) and 10.3HD (Portfolio News Alerts)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test test/holdings-import-worker.test.js test/holdings-import.test.js"
+    "test": "node --test test/holdings-import-worker.test.js test/holdings-import.test.js test/alerts.test.js test/alerts-hardening.test.js test/alerts-state.test.js test/guardrail.test.js test/explainer.test.js"
   },
   "dependencies": {
     "express": "^5.0.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "web-push": "^3.6.7"
   }
 }

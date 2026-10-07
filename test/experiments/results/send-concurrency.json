@@ -1,0 +1,26 @@
+{
+  "users": 1000,
+  "sendMs": 50,
+  "rows": [
+    {
+      "concurrency": 1,
+      "seconds": 51.28,
+      "sent": 1000
+    },
+    {
+      "concurrency": 5,
+      "seconds": 10.31,
+      "sent": 1000
+    },
+    {
+      "concurrency": 25,
+      "seconds": 2.06,
+      "sent": 1000
+    },
+    {
+      "concurrency": 100,
+      "seconds": 0.53,
+      "sent": 1000
+    }
+  ]
+}

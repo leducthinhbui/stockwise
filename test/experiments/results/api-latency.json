@@ -1,0 +1,62 @@
+{
+  "total": 400,
+  "parallel": 20,
+  "rows": [
+    {
+      "endpoint": "GET  /api/me",
+      "median": 3.8,
+      "p95": 13.6,
+      "max": 14.8,
+      "failures": 0
+    },
+    {
+      "endpoint": "GET  /api/holdings",
+      "median": 2.2,
+      "p95": 4.7,
+      "max": 6,
+      "failures": 0
+    },
+    {
+      "endpoint": "GET  /api/alerts/prefs",
+      "median": 1.8,
+      "p95": 3,
+      "max": 3.4,
+      "failures": 0
+    },
+    {
+      "endpoint": "PUT  /api/alerts/prefs",
+      "median": 2.5,
+      "p95": 4.4,
+      "max": 5.3,
+      "failures": 0
+    },
+    {
+      "endpoint": "GET  /api/news",
+      "median": 1.8,
+      "p95": 3.2,
+      "max": 3.8,
+      "failures": 0
+    },
+    {
+      "endpoint": "GET  /api/news/1",
+      "median": 2,
+      "p95": 4.6,
+      "max": 5.5,
+      "failures": 0
+    },
+    {
+      "endpoint": "GET  /alerts.html (page)",
+      "median": 1.9,
+      "p95": 3.2,
+      "max": 3.8,
+      "failures": 0
+    },
+    {
+      "endpoint": "GET  /sw.js",
+      "median": 1.7,
+      "p95": 5.6,
+      "max": 7.1,
+      "failures": 0
+    }
+  ]
+}

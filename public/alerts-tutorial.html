@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Bui Duc Thinh">
+  <meta name="description" content="A tutorial on how the Portfolio News Alerts feature is built: permission, service worker, Web Push, and the server job that matches news to holdings.">
+  <title>StockWise &mdash; Portfolio News Alerts: how it works</title>
+
+  <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; connect-src 'self'; worker-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <!-- Site-wide styles shared by all six pages -->
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Skip link: the header repeats on every page, so a keyboard user needs a
+       way past it. Visible only once it receives focus. -->
+  <a class="skip-link visually-hidden-focusable btn btn-light m-2" href="#main">Skip to main content</a>
+
+  <!-- ============================================================
+       Utility bar: brand, site-wide search and account links.
+       The search box sits here so a visitor can look something up before
+       signing up for anything.
+       ============================================================ -->
+  <header>
+    <div class="utility-bar text-white py-3">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <!-- The brand name is a text hyperlink back to the home page -->
+        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+
+        <form class="d-flex" role="search" action="search.html" method="get">
+          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <input class="form-control me-2" type="search" id="siteSearch" name="q"
+            placeholder="Search explanations and guides">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div>
+          <a class="btn btn-outline-light btn-sm" href="register.html">Log in</a>
+          <a class="btn btn-primary btn-sm" href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Primary navigation. Plain text labels, one level deep, and the
+         same on every page. No icon-only controls and nothing that needs
+         a hover or a swipe to discover.
+         ============================================================ -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+          <span class="ms-2 text-white d-lg-none">Menu</span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="alerts.html">My alerts</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <div class="page-banner py-4">
+      <div class="container">
+        <h1 class="mb-1">Portfolio News Alerts: how it works</h1>
+        <p class="lead mb-0">A tutorial for another developer who wants to build the same feature.</p>
+      </div>
+    </div>
+
+    <div class="container py-4" style="max-width: 62rem;">
+
+      <p>
+        Portfolio News Alerts tells a signed-in user, the moment news breaks about a stock they hold,
+        with a browser notification. It works with every StockWise tab closed. This page explains how it
+        is built, file by file, so you can build something similar. The feature was proposed in Task 7.3HD
+        and implemented for Task 10.3HD. You can try it on <a href="alerts.html">My alerts</a>.
+      </p>
+
+      <div class="alert alert-secondary" role="note">
+        <strong>One rule shaped every decision:</strong> the alert is instant for everyone. A plan can change
+        how much detail you read when you open it, or how many holdings are covered, but never how soon you
+        are told. Everything below follows from that, and from the site's promise that it explains and never
+        recommends.
+      </div>
+
+      <h2>The shape of it</h2>
+      <p>
+        Three browser features make an instant, tab-closed notification possible, and each does one job.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <caption>The three browser APIs and what each is for</caption>
+          <thead class="table-light"><tr><th scope="col">API</th><th scope="col">Job</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Notifications API</strong></td><td>Asks the user's permission, and shows the alert on the device.</td></tr>
+            <tr><td><strong>Service Worker</strong></td><td>A background script the browser can start even when no tab is open. It receives the push and shows the notification.</td></tr>
+            <tr><td><strong>Push API</strong></td><td>Subscribes this browser to the browser vendor's push service, which gives the server an address it can send to.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="my-4">
+        <img src="images/alerts-architecture.png" class="img-fluid rounded border"
+          alt="Flow diagram, left to right: an external news API is polled by a matching job on the Express server, which reads the holdings table. When a match is found the server builds a payload, reading the push_subscriptions table, and sends it with web-push to the push relay. The relay delivers it to the service worker in the user's browser, which shows the notification even if the tab is closed.">
+        <figcaption class="small text-body-secondary mt-2">
+          Backend data flow. In this prototype the news step is a stand-in (sample items released by a button);
+          everything to the right of it is the real code path.
+        </figcaption>
+      </figure>
+
+      <h2>The files</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <caption>Files that make up this feature</caption>
+          <thead class="table-light"><tr><th scope="col">File</th><th scope="col">Role</th></tr></thead>
+          <tbody>
+            <tr><td><code>lib/alerts-db.js</code></td><td>Tables, plan limits, sample data, and every query. Each one takes the user id as an argument and puts it in the WHERE clause.</td></tr>
+            <tr><td><code>lib/alerts.js</code></td><td>The logic without Express: building the notification payload, shaping news by plan, releasing news, the delivery job, VAPID keys.</td></tr>
+            <tr><td><code>lib/alerts-routes.js</code></td><td>The HTTP API (an Express router). Gets the user from the session, never from the request.</td></tr>
+            <tr><td><code>public/sw.js</code></td><td>The service worker: <code>push</code> and <code>notificationclick</code> handlers.</td></tr>
+            <tr><td><code>public/alerts.html</code>, <code>public/js/alerts.js</code></td><td>The page: permissions, the state machine, holdings, the Account &amp; Privacy table, the in-app list.</td></tr>
+            <tr><td><code>public/news.html</code>, <code>public/js/news.js</code></td><td>The page a notification opens. Plan-shaped explanation.</td></tr>
+            <tr><td><code>test/alerts.test.js</code></td><td>Tests for the claims on this page. 72 tests across the project; the experiments are in <code>test/experiments/</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Build it, step by step</h2>
+
+      <h3 class="h5 mt-4">1. Make a VAPID key pair and keep the private half private</h3>
+      <p>
+        VAPID keys identify your server to the push service. The private key can send to every subscribed
+        device, so it lives in a git-ignored file (or an environment variable) and is never sent to the
+        browser or logged. Only the public key is served, because the browser needs it to subscribe.
+      </p>
+<pre class="bg-light p-3 rounded"><code>const keys = webpush.generateVAPIDKeys();
+fs.writeFileSync(&#x27;vapid-keys.json&#x27;, JSON.stringify(keys), { mode: 0o600 });
+webpush.setVapidDetails(&#x27;mailto:you@example.com&#x27;, keys.publicKey, keys.privateKey);</code></pre>
+
+      <h3 class="h5 mt-4">2. Create the tables</h3>
+      <p>
+        Two tables carry the feature. <code>holdings</code> says who holds what, and
+        <code>push_subscriptions</code> holds one row per browser the user turned alerts on for.
+        <code>alert_prefs</code> stores the user's <em>intent</em> separately, because whether a
+        notification can really be shown also depends on the browser's own permission (step 6).
+      </p>
+<pre class="bg-light p-3 rounded"><code>CREATE TABLE holdings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ticker TEXT NOT NULL,
+  UNIQUE (user_id, ticker)
+);
+CREATE TABLE push_subscriptions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  endpoint TEXT NOT NULL UNIQUE,
+  p256dh TEXT NOT NULL,
+  auth TEXT NOT NULL
+);</code></pre>
+
+      <h3 class="h5 mt-4">3. Register the service worker</h3>
+      <p>
+        Serve the worker from the site root (<code>/sw.js</code>) so its scope covers the whole site.
+        Register it once the page loads, and treat a failure as "this browser cannot do push", not as an
+        error: the in-app list still works.
+      </p>
+<pre class="bg-light p-3 rounded"><code>swRegistration = await navigator.serviceWorker.register(&#x27;/sw.js&#x27;);
+await navigator.serviceWorker.ready;</code></pre>
+
+      <h3 class="h5 mt-4">4. Ask for permission from a click, then subscribe</h3>
+      <p>
+        Browsers only show the permission prompt for something the user just did, and Chrome quietly
+        downgrades prompts fired without a user action. So the request sits directly inside the checkbox's
+        change handler, on the page where the user can see why it is being asked, not at registration.
+      </p>
+<pre class="bg-light p-3 rounded"><code>permission = await Notification.requestPermission();   // the browser&#x27;s own prompt
+const sub = await swRegistration.pushManager.subscribe({
+  userVisibleOnly: true,                                // every push must show a notification
+  applicationServerKey: urlBase64ToUint8Array(publicKey)
+});
+await api(&#x27;POST&#x27;, &#x27;/api/push/subscribe&#x27;, sub.toJSON()); // the server stores it</code></pre>
+
+      <h3 class="h5 mt-4">5. Store the subscription, scoped to the session</h3>
+      <p>
+        The server validates the endpoint (it must be an https URL) and the two keys, then saves it for the
+        user who is signed in. The user id comes from the session cookie, never from the request body, so a
+        request cannot be pointed at someone else's account.
+      </p>
+<pre class="bg-light p-3 rounded"><code>function requireUser(req, res, next) {
+  const token = readCookie(req, SESSION_COOKIE);
+  const user = token ? store.getUser(db, sessions.get(token)) : undefined;
+  if (!user) return fail(res, 401, &#x27;Please sign in first.&#x27;);
+  req.user = user;                         // from the session, never from the request
+  next();
+}</code></pre>
+
+      <h3 class="h5 mt-4">6. Treat the browser permission as live, and keep intent separate</h3>
+      <p>
+        The user can change the browser's notification permission in its own settings at any time, outside
+        your page. So the page reads <code>Notification.permission</code> fresh each time and combines it with
+        the stored intent. A denied permission cannot be re-requested from JavaScript, so it needs its own
+        calm, permanent explanation rather than a repeating prompt.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <caption>The states the page can be in</caption>
+          <thead class="table-light"><tr><th scope="col">State</th><th scope="col">Stored intent</th><th scope="col">Browser permission</th><th scope="col">What the page shows</th></tr></thead>
+          <tbody>
+            <tr><td>Off</td><td>off</td><td>any</td><td>"Alerts are off."</td></tr>
+            <tr><td>Active</td><td>on</td><td>granted, and subscribed</td><td>Success message; the box is ticked.</td></tr>
+            <tr><td>Blocked</td><td>on</td><td>denied</td><td>Box unticked, with an explanation of how to allow it in browser settings.</td></tr>
+            <tr><td>Failed</td><td>on</td><td>granted, subscribe failed</td><td>"That is on our side", with a Try again button.</td></tr>
+            <tr><td>Needs permission</td><td>on</td><td>not yet asked</td><td>Prompts the user to tick the box.</td></tr>
+            <tr><td>Unsupported</td><td>on</td><td>no push in this browser</td><td>In-app list only.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="h5 mt-4">7. Receive the push in the service worker</h3>
+      <p>
+        The worker displays whatever it is sent. It adds nothing, which is what lets the server decide, in
+        one place, what a lock screen may show.
+      </p>
+<pre class="bg-light p-3 rounded"><code>self.addEventListener(&#x27;push&#x27;, function (event) {
+  var data = event.data ? event.data.json() : {};
+  event.waitUntil(
+    self.registration.showNotification(data.title || &#x27;StockWise&#x27;, {
+      body: data.body || &quot;There&#x27;s news about one of your holdings.&quot;,
+      tag: data.tag,                       // same tag replaces, not stacks
+      data: { newsId: data.newsId }        // an opaque id for the click handler
+    })
+  );
+});</code></pre>
+
+      <h3 class="h5 mt-4">8. Build the payload on the server: generic by default</h3>
+      <p>
+        A lock screen can be read by anyone nearby with no sign-in. So by default the payload names nothing.
+        Only a user who ticked "Show the holding's name on my lock screen" gets the specific text, and even
+        then only the headline, never the plan-gated explanation.
+      </p>
+<pre class="bg-light p-3 rounded"><code>function buildPushPayload(prefs, newsItem) {
+  const specific = prefs.showOnLockScreen === true;
+  return {
+    title: &#x27;StockWise&#x27;,
+    body: specific ? `${newsItem.ticker}: ${newsItem.headline}` : GENERIC_BODY,
+    newsId: newsItem.id,
+    tag: `stockwise-news-${newsItem.id}`
+  };
+}</code></pre>
+
+      <h3 class="h5 mt-4">9. The delivery job: match, send, clean up</h3>
+      <p>
+        For one news item, find every user who holds the ticker, has "notify immediately" on, and has at least
+        one subscription, and send each of their devices the payload that user's own choices allow. A
+        <code>deliveries</code> table makes it safe to run twice. If the push service answers 404 or 410, that
+        subscription is gone (the user cleared site data or revoked permission), so the row is deleted.
+      </p>
+<pre class="bg-light p-3 rounded"><code>await send({ endpoint, keys: { p256dh, auth } }, payload);   // web-push, in production
+...
+if (err.statusCode === 404 || err.statusCode === 410) {
+  db.prepare(&#x27;DELETE FROM push_subscriptions WHERE endpoint = ?&#x27;).run(endpoint);
+}</code></pre>
+
+      <h3 class="h5 mt-4">10. Keep the dependent checkbox reachable</h3>
+      <p>
+        "Show the name on my lock screen" means nothing unless alerts are on. A native
+        <code>disabled</code> checkbox would vanish from the Tab order, so a keyboard or screen reader user
+        would never find it or learn why it is inert. Use <code>aria-disabled</code>, cancel the click, and
+        explain it in the helper text linked with <code>aria-describedby</code>. The stored value is kept
+        while it is inert, so turning alerts back on restores the earlier choice.
+      </p>
+<pre class="bg-light p-3 rounded"><code>lock.setAttribute(&#x27;aria-disabled&#x27;, lockAvailable ? &#x27;false&#x27; : &#x27;true&#x27;);
+lock.addEventListener(&#x27;click&#x27;, function (event) {
+  if (lock.getAttribute(&#x27;aria-disabled&#x27;) === &#x27;true&#x27;) event.preventDefault();
+});</code></pre>
+
+      <h3 class="h5 mt-4">11. Let the plan change depth, never speed</h3>
+      <p>
+        The push goes to every plan at the same moment. What differs is what <code>/api/news/:id</code>
+        returns when the user opens it: Free gets the short summary; Standard and Full get the fuller
+        explanation and one named analyst's reported words, with its source. StockWise never averages or
+        scores analyst views, and never forecasts.
+      </p>
+
+      <h2>Security and privacy decisions</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <caption>Risks, and where each is handled</caption>
+          <thead class="table-light"><tr><th scope="col">Risk</th><th scope="col">What was done</th><th scope="col">Where</th></tr></thead>
+          <tbody>
+            <tr><td>A leaked push subscription plus the private key could be used to send convincing fake alerts.</td><td>The private key stays in a git-ignored file and is never sent or logged. Only the public key is served.</td><td><code>loadVapidKeys</code></td></tr>
+            <tr><td>One user reading another's holdings or subscriptions (an insecure direct object reference).</td><td>The user comes from the session only. Every query is keyed by it. News is joined to the user's own holdings.</td><td><code>requireUser</code>, <code>lib/alerts-db.js</code></td></tr>
+            <tr><td>A lock screen exposing a portfolio.</td><td>The payload is generic unless the user opted in.</td><td><code>buildPushPayload</code></td></tr>
+            <tr><td>A stored push channel outliving the user's choice.</td><td>Turning alerts off deletes the subscription on the server too. "Delete my alert data" removes preferences and all subscriptions.</td><td><code>PUT /api/alerts/prefs</code>, <code>DELETE /api/alerts</code></td></tr>
+            <tr><td>The browser can see stored data it should not trust.</td><td>Values from the server are written with <code>textContent</code>, and analyst links are only followed if they are https.</td><td><code>alerts.js</code>, <code>news.js</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Web Push payloads are also encrypted end to end between the server and the browser
+        (RFC 8291), so the push service that carries the message cannot read it. That leaves two places to
+        protect: what is stored in your database, and what is shown on the device.
+      </p>
+
+      <h2>What is real and what is a stand-in</h2>
+      <ul>
+        <li><strong>Real:</strong> the permission prompt, the service worker, the push subscription with the
+          browser vendor's push service, web-push delivery with VAPID, encrypted payloads, the notification, the
+          session-scoped queries, deleting subscriptions, the plan-shaped explanation.</li>
+        <li><strong>A stand-in:</strong> the news. A production job would poll a licensed news API and insert
+          rows into <code>news_items</code>. Here, a button releases the next sample item. All companies, tickers
+          and analysts are invented, and nothing is real news.</li>
+        <li><strong>A stand-in:</strong> sign-in. Two demo accounts, no passwords. The cookie is
+          <code>HttpOnly</code> and <code>SameSite=Lax</code>; a real site would also use HTTPS and the
+          <code>Secure</code> flag.</li>
+        <li><strong>A limit:</strong> iOS Safari only supports web push for sites added to the home screen.
+          Those users still see every alert in the in-app list.</li>
+        <li><strong>A limit:</strong> the delivery job runs when an item is released. A production version
+          would also run on a schedule to retry transient failures; the <code>deliveries</code> table already
+          makes that safe.</li>
+        <li><strong>Not automated:</strong> tapping the notification (the <code>notificationclick</code>
+          handler) cannot be driven from a test browser. Check it by hand: tap the notification and confirm
+          the explanation page opens.</li>
+      </ul>
+
+      <h2>Testing the claims: hypotheses and results</h2>
+      <p>
+        Every claim the proposal made about speed, privacy, fairness and accessibility was written as a
+        hypothesis a measurement could prove wrong, then tested. Where the result disagreed, the code was
+        changed and the test repeated. The real-browser tests drive an actual Chrome with a real push
+        subscription at Google's push service. Every experiment is a script in <code>test/experiments/</code>
+        you can re-run, and the charts below are drawn from the saved results by <code>make-charts.py</code>.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle table-sm">
+          <caption>The twelve hypotheses, how each was tested, and what happened</caption>
+          <thead class="table-light">
+            <tr><th scope="col">ID</th><th scope="col">Hypothesis</th><th scope="col">Method</th><th scope="col">Result</th><th scope="col">Verdict</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">H1</th><td>A push reaches the screen in under a second, far sooner than a page that polls every 20 s.</td><td>Real Chrome with a real push subscription. 10 push trials; 5 polling trials at random points in the cycle.</td><td>Push: median 196 ms, worst 430 ms. Polling: median 13.3 s (3.1 to 16.2 s).</td><td class="table-success">Supported</td></tr>
+            <tr><th scope="row">H2</th><td>Delivery time grows in proportion to the number of users affected.</td><td>1,000 to 50,000 users, with and without two database indexes; 5 runs each.</td><td>Without indexes it was quadratic: 51.5 s at 50,000 users. With them: 0.45 s.</td><td class="table-danger">Refuted, fixed</td></tr>
+            <tr><th scope="row">H2b</th><td>Sending to several users at once removes the wait for the last user.</td><td>1,000 users, 50 ms per push, concurrency 1 to 100.</td><td>One at a time: 51.3 s. 25 at once: 2.06 s. 100 at once: 0.53 s.</td><td class="table-success">Supported</td></tr>
+            <tr><th scope="row">H3</th><td>A long headline cannot make a push too large to send.</td><td>Pushed sizes up to 10 KB at Google's live push service.</td><td>Accepted up to 3,993 bytes, refused (HTTP 400) from 3,994, in 3 of 3 trials at each size. I predicted this edge before measuring it, as 4,096 bytes minus 103 bytes of encryption overhead (RFC 8291). The first draft reached 4,072 bytes.</td><td class="table-danger">Refuted, fixed</td></tr>
+            <tr><th scope="row">H4</th><td>No request can read or change another user's data.</td><td>33 attack variants: ids in the query, body and headers, forged cookies, other users' tickers and news.</td><td>0 changes to the victim's data, 0 leaks in successful responses.</td><td class="table-success">Supported</td></tr>
+            <tr><th scope="row">H5</th><td>Overlapping delivery runs never send the same alert twice.</td><td>Two overlapping runs, 40 trials; then 50 overlapping runs.</td><td>First draft sent twice in 40 of 40 trials. Claim-then-send: 0 of 40.</td><td class="table-danger">Refuted, fixed</td></tr>
+            <tr><th scope="row">H6</th><td>Knowing an endpoint is not enough to take over someone's push channel.</td><td>An attacker posts the victim's endpoint with their own keys.</td><td>First draft: the record was taken over, so the victim silently stops getting alerts (the push itself still goes to the victim's browser, so the attacker cannot read it). Now refused (HTTP 409) unless the secret keys match.</td><td class="table-danger">Refuted, fixed</td></tr>
+            <tr><th scope="row">H7</th><td>The page never says alerts are working when they are not.</td><td>All 32 combinations of the four inputs to the state function.</td><td>No violations. 'Active' appears only when permission, subscription and intent all hold.</td><td class="table-success">Supported</td></tr>
+            <tr><th scope="row">H8</th><td>Free and Standard users are told at the same moment.</td><td>Two separate real browsers, one per plan, 6 trials.</td><td>Medians 379 ms and 393 ms; worst gap 379 ms. Only the readable detail differs.</td><td class="table-success">Supported</td></tr>
+            <tr><th scope="row">H9</th><td>The advice-language checker catches at least 80% of violations and wrongly flags at most 10%.</td><td>Three labelled sets: development, held-out, and adversarial (never used for tuning).</td><td>Held-out: 29/30 caught, 0/30 wrongly flagged. Disguised wording: 0/16 caught, 6/10 harmless sentences flagged.</td><td class="table-warning">Supported for direct wording, refuted for paraphrase</td></tr>
+            <tr><th scope="row">H10</th><td>Every API call answers in under 100 ms at the 95th percentile.</td><td>400 requests per endpoint, 20 at a time, 8 endpoints.</td><td>p95 between 3.0 and 13.6 ms (local, small data).</td><td class="table-success">Supported</td></tr>
+            <tr><th scope="row">H11</th><td>No WCAG 2.2 A or AA violations in any state.</td><td>axe-core on 8 states, including blocked and phone width.</td><td>First run: 5 violations (red button 4.26:1; nav toggle name). After fixes: 0.</td><td class="table-danger">Refuted, fixed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="my-4">
+        <img src="images/eval-latency.png" class="img-fluid rounded border bg-white"
+          alt="Chart on a log scale of time from news release to the notification appearing. Ten Web Push trials cluster between 159 and 430 milliseconds with a median of 196. Five polling trials fall between 3.1 and 16.2 seconds with a median of 13.3. Dashed lines mark 0.1, 1 and 10 seconds.">
+        <figcaption class="small text-body-secondary mt-2">Push against polling, with Nielsen's three response-time limits marked.</figcaption>
+      </figure>
+      <figure class="my-4">
+        <img src="images/eval-scale.png" class="img-fluid rounded border bg-white"
+          alt="Chart on log scales of delivery job time against number of users. Without indexes the time rises from 29 milliseconds at 1,000 users to 51 seconds at 50,000. With indexes it rises from 9 milliseconds to 0.45 seconds.">
+        <figcaption class="small text-body-secondary mt-2">Two missing indexes made the delivery job quadratic.</figcaption>
+      </figure>
+      <figure class="my-4">
+        <img src="images/eval-parity.png" class="img-fluid rounded border bg-white"
+          alt="Chart of six paired trials of arrival time for a Free plan user and a Standard plan user. Arrival times are between 168 and 583 milliseconds and the largest gap between the two users is 379 milliseconds.">
+        <figcaption class="small text-body-secondary mt-2">Free and Standard users were told together; only the detail differs.</figcaption>
+      </figure>
+
+      <h3 class="h5 mt-4">What testing changed in the build</h3>
+      <ul>
+        <li><strong>Two indexes</strong> on <code>holdings(ticker)</code> and <code>push_subscriptions(user_id)</code>: 51 s became 0.45 s at 50,000 users. The cost was not the big matching query but a per-user lookup that rescanned a table.</li>
+        <li><strong>Claim, then send:</strong> a delivery is recorded before the push is sent, so overlapping runs cannot send twice (40 of 40 duplicates became 0 of 40).</li>
+        <li><strong>Bounded concurrency</strong> (25 sends at once) instead of one at a time: 51 s became 2 s for 1,000 users at 50 ms per push.</li>
+        <li><strong>A 120-character headline cap</strong> in lock-screen text, because Google's push service refused pushes from 3,994 bytes.</li>
+        <li><strong>Subscription takeover protection:</strong> an existing endpoint can only be re-assigned by someone who also holds its secret keys.</li>
+        <li><strong>Accessibility:</strong> a red button raised from 4.26:1 to 7.63:1 contrast, and the nav toggle's accessible name made to contain its visible text.</li>
+      </ul>
+
+      <h3 class="h5 mt-4">Where the evidence is weak</h3>
+      <ul>
+        <li>Small samples on one machine and network, in headless Chrome: ten push trials, five polling trials, six plan pairs. They show an order of magnitude, not a precise distribution.</li>
+        <li>The scale test used a fake sender and an in-memory database, so it does not predict a production system.</li>
+        <li>No participants. The accessibility audit is automated (axe-core) and finds only part of the real problems; no screen reader test was run.</li>
+        <li>The news is invented, tapping a notification is not covered by an automated test, and iOS Safari was not tested.</li>
+        <li>The advice checker's test sentences were written by one person.</li>
+      </ul>
+
+      <h2>Using AI, carefully</h2>
+      <p>
+        An explanation could be drafted by a language model from the raw news. <code>lib/explainer.js</code> does
+        that, but only as a <em>draft</em>: its best possible result is "needs review", a person approves it, and it
+        is only ever sent public news text, never a user's holdings. <code>lib/guardrail.js</code> first rejects any
+        draft with advice, forecast, verdict or pressure language. The evaluation (H9) is why a person stays in the
+        loop: the checker caught 29 of 30 direct violations in a held-out set, but none of 16 deliberately disguised
+        ones, and wrongly flagged 6 of 10 harmless sentences containing words like "strong" or "upside". A keyword
+        filter is a first filter, not a judge. The explainer is tested with a fake model; run
+        <code>test/manual/ai-explainer-live.js</code> with your own key to see what a real model writes.
+      </p>
+
+      <h2>Run it and test it</h2>
+<pre class="bg-light p-3 rounded"><code>npm install
+npm start          # http://localhost:3000/alerts.html
+npm test           # 72 tests across the whole project</code></pre>
+      <p>
+        On <a href="alerts.html">My alerts</a>: choose a demo account, tick "Notify me immediately", allow
+        notifications when your browser asks, then press "Send me a test alert now". On macOS, Chrome must also be
+        allowed to show notifications in System Settings. The tests use an in-memory database and a fake push
+        sender, so they never touch <code>stockwise.db</code> or a real push service.
+      </p>
+
+      <h2>Sources</h2>
+      <ul>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc8291">RFC 8291: Message Encryption for Web Push</a></li>
+        <li><a href="https://www.w3.org/TR/push-api/">W3C Push API</a></li>
+        <li><a href="https://notifications.spec.whatwg.org/">WHATWG Notifications standard</a></li>
+        <li><a href="https://www.w3.org/TR/service-workers/">W3C Service Workers</a></li>
+        <li><a href="https://owasp.org/Top10/2021/A01_2021-Broken_Access_Control/">OWASP Top 10:2021, A01 Broken Access Control</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/">W3C ARIA Authoring Practices Guide</a></li>
+        <li><a href="https://github.com/web-push-libs/web-push">web-push library for Node.js</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc8030">RFC 8030: Generic Event Delivery Using HTTP Push</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc8292">RFC 8292: VAPID for Web Push</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc9110">RFC 9110: HTTP Semantics</a></li>
+        <li><a href="https://www.nngroup.com/articles/response-times-3-important-limits/">Nielsen (1993), Response Times: The 3 Important Limits</a></li>
+        <li><a href="https://doi.org/10.1145/276305.276360">Franklin and Zdonik (1998), "Data in your face": Push technology in perspective</a></li>
+        <li><a href="https://doi.org/10.1093/rfs/hhm079">Barber and Odean (2008), All that glitters</a></li>
+        <li><a href="https://doi.org/10.1145/3571730">Ji et al. (2023), Survey of hallucination in natural language generation</a></li>
+        <li><a href="https://download.asic.gov.au/media/mtllqjo0/rep-798-published-29-october-2024.pdf">ASIC Report 798, Beware the gap: Governance arrangements in the face of AI innovation</a></li>
+        <li><a href="https://github.com/dequelabs/axe-core">axe-core accessibility testing engine</a></li>
+      </ul>
+
+    </div>
+    </main>
+
+  <!-- ============================================================
+       Footer, repeated on every page. Carries the contact details the
+       specification requires and a secondary set of text links.
+       Link colour is set explicitly in styles.css: an inherited .text-white
+       does not beat Bootstrap's own link colour, which would leave these
+       at about 3.4:1 on this background.
+       ============================================================ -->
+  <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Contact us</h2>
+          <address class="mb-0">
+            StockWise Pty Ltd<br>
+            221 Burwood Highway<br>
+            Burwood VIC 3125, Australia<br>
+            Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
+            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+          </address>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Opening hours</h2>
+          <p class="mb-0">
+            Monday to Friday: 9:00am &ndash; 5:00pm AEST<br>
+            Saturday: 10:00am &ndash; 2:00pm AEST<br>
+            Sunday and public holidays: closed
+          </p>
+        </div>
+
+        <div class="col-md-4">
+          <h2 class="h6 text-uppercase">Site map</h2>
+          <ul class="list-unstyled mb-0">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="plans.html">Plans &amp; Services</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="queries.html">Query admin</a></li>
+            <li><a href="import-tutorial.html">Import your holdings: how it works</a></li>
+            <li><a href="alerts.html">My alerts</a></li>
+            <li><a href="alerts-tutorial.html">Portfolio News Alerts: how it works</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr>
+      <p class="mb-0 small text-center">
+        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        explanations only. We do not provide personal financial product advice and we do not
+        recommend buying, selling or holding any investment.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Back to top: hidden until js/interactions.js reveals it after scrolling -->
+  <a class="back-to-top btn btn-primary btn-sm" href="#main" id="backToTop">
+    Back to top
+  </a>
+
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the FAQ accordion above -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <!-- Shared interactivity: back-to-top show/hide -->
+  <script src="js/interactions.js"></script>
+
+</body>
+
+</html>

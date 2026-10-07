@@ -1,0 +1,126 @@
+{
+  "rows": [
+    {
+      "n": 1000,
+      "withIndexes": false,
+      "fraction": 1,
+      "matched": 1000,
+      "sent": 1000,
+      "deliverMs": 28.6,
+      "queryMs": 0.66,
+      "plan": [
+        "SCAN p",
+        "CORRELATED SCALAR SUBQUERY 2",
+        "SEARCH d USING COVERING INDEX sqlite_autoindex_deliveries_1 (user_id=? AND news_id=?)",
+        "SEARCH h USING COVERING INDEX sqlite_autoindex_holdings_1 (user_id=? AND ticker=?)",
+        "BLOOM FILTER ON s (user_id=?)",
+        "SEARCH s EXISTS USING AUTOMATIC PARTIAL COVERING INDEX (user_id=?)"
+      ]
+    },
+    {
+      "n": 10000,
+      "withIndexes": false,
+      "fraction": 1,
+      "matched": 10000,
+      "sent": 10000,
+      "deliverMs": 2093.88,
+      "queryMs": 7.9
+    },
+    {
+      "n": 50000,
+      "withIndexes": false,
+      "fraction": 1,
+      "matched": 50000,
+      "sent": 50000,
+      "deliverMs": 51494.16,
+      "queryMs": 36.67
+    },
+    {
+      "n": 10000,
+      "withIndexes": false,
+      "fraction": 0.01,
+      "matched": 100,
+      "sent": 100,
+      "deliverMs": 25.05,
+      "queryMs": 3.35
+    },
+    {
+      "n": 50000,
+      "withIndexes": false,
+      "fraction": 0.01,
+      "matched": 500,
+      "sent": 500,
+      "deliverMs": 535.79,
+      "queryMs": 18.06
+    },
+    {
+      "n": 1000,
+      "withIndexes": true,
+      "fraction": 1,
+      "matched": 1000,
+      "sent": 1000,
+      "deliverMs": 9.06,
+      "queryMs": 0.56,
+      "plan": [
+        "SEARCH h USING INDEX idx_holdings_ticker (ticker=?)",
+        "SEARCH p USING INTEGER PRIMARY KEY (rowid=?)",
+        "CORRELATED SCALAR SUBQUERY 2",
+        "SEARCH d USING COVERING INDEX sqlite_autoindex_deliveries_1 (user_id=? AND news_id=?)",
+        "SEARCH s EXISTS USING COVERING INDEX idx_push_subscriptions_user (user_id=?)",
+        "USE TEMP B-TREE FOR DISTINCT"
+      ]
+    },
+    {
+      "n": 10000,
+      "withIndexes": true,
+      "fraction": 1,
+      "matched": 10000,
+      "sent": 10000,
+      "deliverMs": 89.16,
+      "queryMs": 5.76
+    },
+    {
+      "n": 50000,
+      "withIndexes": true,
+      "fraction": 1,
+      "matched": 50000,
+      "sent": 50000,
+      "deliverMs": 447.85,
+      "queryMs": 30.15
+    },
+    {
+      "n": 10000,
+      "withIndexes": true,
+      "fraction": 0.01,
+      "matched": 100,
+      "sent": 100,
+      "deliverMs": 0.9,
+      "queryMs": 0.06
+    },
+    {
+      "n": 50000,
+      "withIndexes": true,
+      "fraction": 0.01,
+      "matched": 500,
+      "sent": 500,
+      "deliverMs": 4.29,
+      "queryMs": 0.29
+    }
+  ],
+  "planNo": [
+    "SCAN p",
+    "CORRELATED SCALAR SUBQUERY 2",
+    "SEARCH d USING COVERING INDEX sqlite_autoindex_deliveries_1 (user_id=? AND news_id=?)",
+    "SEARCH h USING COVERING INDEX sqlite_autoindex_holdings_1 (user_id=? AND ticker=?)",
+    "BLOOM FILTER ON s (user_id=?)",
+    "SEARCH s EXISTS USING AUTOMATIC PARTIAL COVERING INDEX (user_id=?)"
+  ],
+  "planYes": [
+    "SEARCH h USING INDEX idx_holdings_ticker (ticker=?)",
+    "SEARCH p USING INTEGER PRIMARY KEY (rowid=?)",
+    "CORRELATED SCALAR SUBQUERY 2",
+    "SEARCH d USING COVERING INDEX sqlite_autoindex_deliveries_1 (user_id=? AND news_id=?)",
+    "SEARCH s EXISTS USING COVERING INDEX idx_push_subscriptions_user (user_id=?)",
+    "USE TEMP B-TREE FOR DISTINCT"
+  ]
+}

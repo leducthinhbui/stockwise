@@ -5,11 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Bui Duc Thinh">
-  <meta name="description" content="Search results across StockWise plans, explanations and learning guides.">
-  <title>StockWise &mdash; Search Results</title>
+  <meta name="description" content="Plain-English explanation of news about a stock you hold.">
+  <title>StockWise &mdash; News about your holding</title>
 
   <!-- Bootstrap 5.3.8 from the jsDelivr CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; connect-src 'self'; worker-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <!-- Site-wide styles shared by all six pages -->
   <link href="css/styles.css" rel="stylesheet">
 </head>
@@ -63,7 +65,7 @@
           <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="about.html">About</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="plans.html">Plans &amp; Services</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="alerts.html">My alerts</a></li>
+          <li class="nav-item"><a class="nav-link text-white active" href="alerts.html" aria-current="page">My alerts</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="register.html">Register</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
           </ul>
@@ -74,125 +76,64 @@
 
   <main id="main">
 
-    <!-- Page banner -->
     <div class="page-banner py-4">
       <div class="container">
-        <h1 class="mb-1">Search results</h1>
-        <p class="lead mb-0">These draft pages show a sample set of results; the search is not wired up yet.</p>
+        <h1 class="mb-1">News about your holding</h1>
+        <p class="lead mb-0">What happened, in plain English. We explain; we never recommend.</p>
       </div>
     </div>
 
     <div class="container py-4">
-      <form class="row g-2 align-items-end" action="search.html" method="get">
-        <div class="col-md-8">
-          <label for="resultsSearch" class="form-label">Search StockWise</label>
-          <input type="search" class="form-control" id="resultsSearch" name="q" value="franking credits">
-        </div>
-        <div class="col-md-2">
-          <label for="sort" class="form-label">Sort by</label>
-          <select class="form-select" id="sort" name="sort">
-            <option value="relevance">Relevance</option>
-            <option value="newest">Newest first</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary w-100" type="submit">Search</button>
-        </div>
-      </form>
-      <p class="mt-3 mb-0">
-        Showing <strong>3</strong> results for &ldquo;franking credits&rdquo;.
-        <a href="plans.html">Clear search</a>
-      </p>
-    </div>
+      <p id="newsStatus" role="status">Loading&hellip;</p>
 
-    <div class="container pb-5">
-      <div class="row g-4">
+      <article id="newsArticle" class="d-none" aria-labelledby="headline">
+        <p class="mb-2">
+          <span class="badge text-bg-secondary" id="tickerBadge"></span>
+          <span class="badge text-bg-warning">Sample data, not real news</span>
+        </p>
+        <h2 id="headline" class="h3"></h2>
+        <p class="small text-body-secondary" id="releasedAt"></p>
 
-        <aside class="col-lg-3">
-          <div class="card">
-            <div class="card-body">
-              <h2 class="h5 card-title">Filter results</h2>
-              <fieldset class="mb-3">
-                <legend class="h6">Category</legend>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="filterPlans" checked>
-                  <label class="form-check-label" for="filterPlans">Membership plans</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="filterExplanations" checked>
-                  <label class="form-check-label" for="filterExplanations">Holding explanations</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="filterGuides" checked>
-                  <label class="form-check-label" for="filterGuides">Learning guides</label>
-                </div>
-              </fieldset>
-              <button class="btn btn-outline-primary w-100" type="button">Apply filters</button>
-            </div>
-          </div>
-        </aside>
+        <!-- Same shape as the worked example on the home page: what happened,
+             then (for paid plans) what a named analyst reported, then what we are NOT saying. -->
+        <div class="worked-example p-4 rounded mb-3">
+          <dl class="row mb-0">
+            <dt class="col-sm-3">What happened</dt>
+            <dd class="col-sm-9" id="whatHappened"></dd>
 
-        <div class="col-lg-9">
-          <!-- A heading for the result list itself, so the three result titles
-               nest under it as h3 rather than sitting at the same level as the
-               filter panel. Hidden visually, present for screen readers. -->
-          <h2 class="visually-hidden">Results</h2>
-          <ul class="list-unstyled mb-0">
-            <li class="card mb-3">
-              <div class="card-body d-flex gap-3">
-                <img src="images/statement.svg" class="result-thumb rounded" alt="">
-                <div>
-                  <h3 class="h5 mb-1"><a href="plans.html">What a franking credit is, and why it is not cash</a></h3>
-                  <p class="mb-1 text-body-secondary small">Learning guide</p>
-                  <p class="mb-0">Where the figure comes from and why it appears on your tax statement
-                    rather than in your account.</p>
-                </div>
-              </div>
-            </li>
-            <li class="card mb-3">
-              <div class="card-body d-flex gap-3">
-                <img src="images/change-breakdown.svg" class="result-thumb rounded" alt="">
-                <div>
-                  <h3 class="h5 mb-1"><a href="plans.html">Why franking credits appeared in your account this quarter</a></h3>
-                  <p class="mb-1 text-body-secondary small">Change breakdown</p>
-                  <p class="mb-0">A worked example using two fully franked dividends paid in the same
-                    quarter.</p>
-                </div>
-              </div>
-            </li>
-            <li class="card mb-3">
-              <div class="card-body d-flex gap-3">
-                <img src="images/tiers.svg" class="result-thumb rounded" alt="">
-                <div>
-                  <h3 class="h5 mb-1"><a href="plans.html">Which plans include dividend and distribution breakdowns</a></h3>
-                  <p class="mb-1 text-body-secondary small">Membership plan</p>
-                  <p class="mb-0">Free covers five holdings; Standard and Full include full
-                    breakdowns.</p>
-                </div>
-              </div>
-            </li>
-          </ul>
+            <dt class="col-sm-3 d-none" id="analystDt">What analysts are saying</dt>
+            <dd class="col-sm-9 d-none" id="analystDd">
+              <blockquote class="mb-1" id="analystQuote"></blockquote>
+              <p class="small mb-1" id="analystWho"></p>
+              <p class="small text-body-secondary mb-0">
+                One named analyst's reported words, with its source. StockWise does not average, score
+                or add to analyst views.
+              </p>
+            </dd>
 
-          <!-- "Previous" is inert on the first page. Rather than leaving a live
-               anchor that merely looks greyed out, it is rendered as a span with
-               no href, so it is genuinely not focusable and not announced as a
-               link. This is Bootstrap's documented pattern for a disabled
-               pagination item. -->
-          <nav aria-label="Search results pages">
-            <ul class="pagination">
-              <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-              </li>
-              <li class="page-item active" aria-current="page"><a class="page-link" href="search.html">1</a></li>
-              <li class="page-item"><a class="page-link" href="search.html">2</a></li>
-              <li class="page-item"><a class="page-link" href="search.html">Next</a></li>
-            </ul>
-          </nav>
+            <dt class="col-sm-3">What we are not saying</dt>
+            <dd class="col-sm-9 mb-0">
+              We are not telling you what this means for what you should do, or what happens next.
+              That decision is yours, and any tax or investment question is one for a licensed professional.
+            </dd>
+          </dl>
         </div>
 
+        <div id="planNote" class="alert alert-secondary d-none" role="note">
+          Your plan shows the summary. Standard and Full plans also show the fuller explanation and
+          the attributed analyst comment. You were told at the same moment as every other member:
+          plans change how much detail you read, never how soon you find out.
+        </div>
+
+        <p><a href="alerts.html">Back to My alerts</a></p>
+      </article>
+
+      <div id="newsProblem" class="d-none">
+        <p id="newsProblemText"></p>
+        <p><a class="btn btn-primary" href="alerts.html">Go to My alerts</a></p>
       </div>
     </div>
-  </main>
+    </main>
 
   <!-- ============================================================
        Footer, repeated on every page. Carries the contact details the
@@ -257,10 +198,13 @@
     Back to top
   </a>
 
-  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the modal on the home page -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS bundle, needed for the collapsible navigation bar and the FAQ accordion above -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   <!-- Shared interactivity: back-to-top show/hide -->
   <script src="js/interactions.js"></script>
+  <script src="js/news.js"></script>
+
 </body>
 
 </html>

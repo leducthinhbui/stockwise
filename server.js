@@ -19,6 +19,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Browsers ask for /favicon.ico on every site. The site has no icon yet, so
+// answer "no content" instead of a 404, which would show as a red error in
+// the browser's console and network panel.
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // SQLite database (Node's built-in module, same as Task 9.1P/9.2C/10.1P)
 const db = new DatabaseSync('stockwise.db');
 
@@ -184,6 +189,34 @@ app.delete('/api/queries/:id', (req, res) => {
     sendError(res, 500, 'Could not delete the query.');
   }
 });
+
+// --- Task 10.3HD: Portfolio News Alerts --------------------------------------
+// The feature's tables, routes and push sender live in lib/. They are mounted
+// here, before the /api 404 below, so they share this server and database.
+// See public/alerts-tutorial.html for how the pieces fit together.
+const webpush = require('web-push');
+const { initAlertsSchema, seedDemoData } = require('./lib/alerts-db');
+const { loadVapidKeys, recoverStaleClaims } = require('./lib/alerts');
+const { createAlertsRouter } = require('./lib/alerts-routes');
+
+initAlertsSchema(db);
+seedDemoData(db);
+recoverStaleClaims(db);
+
+// VAPID keys identify this server to the browser's push service. The private
+// key stays in a git-ignored file; only the public key is ever sent out.
+const vapidKeys = loadVapidKeys(webpush, __dirname);
+webpush.setVapidDetails('mailto:hello@stockwise.example.com', vapidKeys.publicKey, vapidKeys.privateKey);
+
+app.use('/api', createAlertsRouter({
+  db,
+  // TTL: if the device is offline, the push service holds the message for up
+  // to an hour, then drops it rather than delivering stale news later.
+  send: (subscription, payload) => webpush.sendNotification(subscription, payload, { TTL: 3600 }),
+  publicKey: vapidKeys.publicKey,
+  // The demo controls ("send a test alert") are switched off in production.
+  devRoutes: process.env.NODE_ENV !== 'production'
+}));
 
 // A request under /api that matches none of the routes above (wrong method,
 // mistyped path) never raises an error, so it would otherwise fall through

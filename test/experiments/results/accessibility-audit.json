@@ -1,0 +1,61 @@
+{
+  "axe": "4.14.0",
+  "tags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa",
+    "wcag22aa",
+    "best-practice"
+  ],
+  "results": [
+    {
+      "label": "1. alerts page, signed out",
+      "passes": 40,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "2. alerts page, signed in, alerts off",
+      "passes": 48,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "3. alerts page, alerts ACTIVE (real push subscription), one item in the list",
+      "passes": 48,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "4. alerts page at phone width (375 px)",
+      "passes": 48,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "5. explanation page, Free plan (summary and plan note)",
+      "passes": 43,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "6. explanation page, Standard plan (full detail and analyst quote)",
+      "passes": 44,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "7. tutorial page",
+      "passes": 44,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "label": "8. alerts page, browser permission DENIED (the blocked state)",
+      "passes": 48,
+      "violations": [],
+      "incomplete": []
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "when": "2026-10-06T06:34:44.230Z",
+  "predictedEdge": 3993,
+  "rows": [
+    {
+      "bytes": 3990,
+      "accepted": 3,
+      "trials": 3,
+      "refusal": ""
+    },
+    {
+      "bytes": 3991,
+      "accepted": 3,
+      "trials": 3,
+      "refusal": ""
+    },
+    {
+      "bytes": 3992,
+      "accepted": 3,
+      "trials": 3,
+      "refusal": ""
+    },
+    {
+      "bytes": 3993,
+      "accepted": 3,
+      "trials": 3,
+      "refusal": ""
+    },
+    {
+      "bytes": 3994,
+      "accepted": 0,
+      "trials": 3,
+      "refusal": "HTTP 400"
+    },
+    {
+      "bytes": 3995,
+      "accepted": 0,
+      "trials": 3,
+      "refusal": "HTTP 400"
+    },
+    {
+      "bytes": 3996,
+      "accepted": 0,
+      "trials": 3,
+      "refusal": "HTTP 400"
+    }
+  ],
+  "verdict": "PREDICTION HELD",
+  "note": "one machine, one Chrome subscription to Google push service"
+}

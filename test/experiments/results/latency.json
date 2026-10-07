@@ -1,0 +1,151 @@
+{
+  "H1a": {
+    "totalMs": [
+      430,
+      227,
+      170,
+      196,
+      165,
+      181,
+      200,
+      195,
+      231,
+      159
+    ],
+    "serverPrepMs": [
+      13,
+      10,
+      12,
+      9,
+      10,
+      17,
+      7,
+      10,
+      5,
+      6
+    ],
+    "pushTransitMs": [
+      417,
+      217,
+      158,
+      187,
+      155,
+      164,
+      193,
+      185,
+      226,
+      153
+    ],
+    "releaseRequestMs": [
+      539,
+      238,
+      189,
+      224,
+      177,
+      185,
+      205,
+      191,
+      173,
+      166
+    ]
+  },
+  "H3live": [
+    {
+      "bytes": 500,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 2000,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3500,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3800,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3900,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3950,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3980,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3990,
+      "outcome": "accepted (HTTP 201)"
+    },
+    {
+      "bytes": 3994,
+      "outcome": "REFUSED (HTTP 400: binary data passed in the request must be less than 4096 byt)"
+    },
+    {
+      "bytes": 3995,
+      "outcome": "REFUSED (HTTP 400: binary data passed in the request must be less than 4096 byt)"
+    },
+    {
+      "bytes": 4000,
+      "outcome": "REFUSED (HTTP 400: binary data passed in the request must be less than 4096 byt)"
+    },
+    {
+      "bytes": 4078,
+      "outcome": "REFUSED (HTTP 400: binary data passed in the request must be less than 4096 byt)"
+    },
+    {
+      "bytes": 4096,
+      "outcome": "REFUSED (HTTP 400: binary data passed in the request must be less than 4096 byt)"
+    },
+    {
+      "bytes": 10000,
+      "outcome": "REFUSED (HTTP 400: binary data passed in the request must be less than 4096 byt)"
+    }
+  ],
+  "H1b": {
+    "pollingMs": [
+      9508,
+      13301,
+      16177,
+      3096,
+      13307
+    ]
+  },
+  "H8": {
+    "freeMs": [
+      204,
+      396,
+      237,
+      379,
+      408,
+      168
+    ],
+    "standardMs": [
+      583,
+      397,
+      187,
+      379,
+      169,
+      393
+    ],
+    "gapMs": [
+      379,
+      1,
+      50,
+      0,
+      239,
+      225
+    ],
+    "detail": {
+      "freeHasDetail": false,
+      "standardHasDetail": true,
+      "freeHasAnalyst": false,
+      "standardHasAnalyst": true
+    }
+  }
+}

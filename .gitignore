@@ -6,3 +6,6 @@ node_modules/
 # these belong in the portfolio submission, not the source code repo.
 Task*.pdf
 Task*.md
+
+# Push server key: can send to every subscribed device, must never be committed
+vapid-keys.json
