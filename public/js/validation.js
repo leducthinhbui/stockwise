@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - client-side validation for the query / feedback form
+   UnderStock - client-side validation for the query / feedback form
    SIT774 Task 5.2D (Website Project, Part 1 - draft pages)
    Extended in Task 10.2D (Part 3) to actually send the query to the server
    once it passes validation, instead of only showing a success message.

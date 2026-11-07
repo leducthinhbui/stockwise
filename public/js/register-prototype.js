@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - register page confirmation (prototype only)
+   UnderStock - register page confirmation (prototype only)
    SIT774 Task 5.2D / 10.3HD
 
    This page has never had a real account database behind it - it is a

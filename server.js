@@ -1,7 +1,7 @@
 // server.js
 // SIT774 Task 10.2D - Website Project Part 3 (Database Integration)
 //
-// Extends the static StockWise site with one SQLite-backed feature: the
+// Extends the static UnderStock site with one SQLite-backed feature: the
 // contact page's query form. js/validation.js (written in Part 1) already
 // says "In Part 3 of this project it will be saved to the database for the
 // administrator to review" - this file is what makes that true, and
@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // SQLite database (Node's built-in module, same as Task 9.1P/9.2C/10.1P)
-const db = new DatabaseSync('stockwise.db');
+const db = new DatabaseSync('understock.db');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS queries (
@@ -206,7 +206,7 @@ recoverStaleClaims(db);
 // VAPID keys identify this server to the browser's push service. The private
 // key stays in a git-ignored file; only the public key is ever sent out.
 const vapidKeys = loadVapidKeys(webpush, __dirname);
-webpush.setVapidDetails('mailto:hello@stockwise.example.com', vapidKeys.publicKey, vapidKeys.privateKey);
+webpush.setVapidDetails('mailto:hello@understock.example.com', vapidKeys.publicKey, vapidKeys.privateKey);
 
 app.use('/api', createAlertsRouter({
   db,

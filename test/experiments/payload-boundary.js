@@ -53,15 +53,15 @@ const PREDICTED_EDGE = 4096 - 103;
       return (await reg.pushManager.getSubscription()).toJSON();
     });
     const vapid = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'vapid-keys.json'), 'utf8'));
-    const options = { vapidDetails: { subject: 'mailto:hello@stockwise.example.com', publicKey: vapid.publicKey, privateKey: vapid.privateKey }, TTL: 60 };
+    const options = { vapidDetails: { subject: 'mailto:hello@understock.example.com', publicKey: vapid.publicKey, privateKey: vapid.privateKey }, TTL: 60 };
 
     const rows = [];
     console.log(`Predicted edge: ${PREDICTED_EDGE} bytes accepted, ${PREDICTED_EDGE + 1} refused\n`);
     console.log('  payload bytes | trials accepted / 3 | first refusal');
     for (let bytes = PREDICTED_EDGE - 3; bytes <= PREDICTED_EDGE + 3; bytes++) {
-      const base = JSON.stringify({ title: 'StockWise', body: '', newsId: 1, tag: 'probe' });
+      const base = JSON.stringify({ title: 'UnderStock', body: '', newsId: 1, tag: 'probe' });
       const body = 'x'.repeat(bytes - Buffer.byteLength(base));
-      const payload = JSON.stringify({ title: 'StockWise', body, newsId: 1, tag: 'probe' });
+      const payload = JSON.stringify({ title: 'UnderStock', body, newsId: 1, tag: 'probe' });
       if (Buffer.byteLength(payload) !== bytes) throw new Error('payload size mismatch');
       let accepted = 0, refusal = '';
       for (let t = 0; t < 3; t++) {

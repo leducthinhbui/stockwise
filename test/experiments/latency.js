@@ -105,7 +105,7 @@ async function waitForNotification(page, tag, t0, timeoutMs = 25000) {
       const t0 = await A.page.evaluate(() => Date.now());
       const released = await post(A.page, '/api/dev/release-news');
       const tResp = await A.page.evaluate(() => Date.now());
-      const data = await waitForNotification(A.page, 'stockwise-news-1', t0);
+      const data = await waitForNotification(A.page, 'understock-news-1', t0);
       if (!data) { console.log(`  trial ${i + 1}: NO notification within 25 s (sent=${released.delivered && released.delivered.sent})`); continue; }
       total.push(data.receivedAt - t0);
       prep.push(data.sentAt - t0);
@@ -128,13 +128,13 @@ async function waitForNotification(page, tag, t0, timeoutMs = 25000) {
       return (await reg.pushManager.getSubscription()).toJSON();
     });
     const vapid = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'vapid-keys.json'), 'utf8'));
-    const options = { vapidDetails: { subject: 'mailto:hello@stockwise.example.com', publicKey: vapid.publicKey, privateKey: vapid.privateKey }, TTL: 60 };
+    const options = { vapidDetails: { subject: 'mailto:hello@understock.example.com', publicKey: vapid.publicKey, privateKey: vapid.privateKey }, TTL: 60 };
     const probe = [];
     console.log('  payload bytes | push service response');
     for (const bytes of [500, 2000, 3500, 3800, 3900, 3950, 3980, 3990, 3994, 3995, 4000, 4078, 4096, 10000]) {
-      const base = JSON.stringify({ title: 'StockWise', body: '', newsId: 1, tag: 'probe' });
+      const base = JSON.stringify({ title: 'UnderStock', body: '', newsId: 1, tag: 'probe' });
       const body = 'x'.repeat(Math.max(0, bytes - Buffer.byteLength(base)));
-      const payload = JSON.stringify({ title: 'StockWise', body, newsId: 1, tag: 'probe' });
+      const payload = JSON.stringify({ title: 'UnderStock', body, newsId: 1, tag: 'probe' });
       let outcome;
       try {
         const r = await webpush.sendNotification(sub, payload, options);
@@ -202,8 +202,8 @@ async function waitForNotification(page, tag, t0, timeoutMs = 25000) {
       const t0 = Date.now();
       const r = await post(fa.page, '/api/dev/release-news');        // item 2 (HBK): both hold it
       const [dFree, dStd] = await Promise.all([
-        waitForNotification(fa.page, 'stockwise-news-2', t0),
-        waitForNotification(fs2.page, 'stockwise-news-2', t0)
+        waitForNotification(fa.page, 'understock-news-2', t0),
+        waitForNotification(fs2.page, 'understock-news-2', t0)
       ]);
       if (!dFree || !dStd) { console.log(`  trial ${i + 1}: a notification did not arrive (sent=${r.delivered && r.delivered.sent})`); continue; }
       freeMs.push(dFree.receivedAt - t0);

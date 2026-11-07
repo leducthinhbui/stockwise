@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - shared page interactivity
+   UnderStock - shared page interactivity
    SIT774 Task 7.2D (Website Project, Part 2 of 3 - interactive prototype)
 
    Loaded on every page. Handles the one dynamic element that is genuinely

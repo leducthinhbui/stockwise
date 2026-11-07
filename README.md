@@ -1,8 +1,8 @@
-# StockWise
+# UnderStock
 
 A plain-English portfolio-explanation website, built across SIT774's website project
 (Tasks 5.2D, 7.2D, 10.2D) and its awesome-feature extension (Tasks 7.3HD, 10.3HD).
-StockWise explains holdings a user already has; it never connects to a trading
+UnderStock explains holdings a user already has; it never connects to a trading
 account and never recommends buying, selling or holding anything.
 
 ## Running it
@@ -14,7 +14,7 @@ npm start
 
 Then open `http://localhost:3000`.
 
-`server.js` opens/creates `stockwise.db` (SQLite, via Node's built-in `node:sqlite`)
+`server.js` opens/creates `understock.db` (SQLite, via Node's built-in `node:sqlite`)
 on first run. On first run it also creates `vapid-keys.json`, the key pair the server
 uses to send push messages. That file is git-ignored: the private key can send to every
 subscribed device and must never be committed.
@@ -27,7 +27,7 @@ npm test      # 72 tests (54 for Portfolio News Alerts)
 
 The feature implemented for Task 10.3HD, extending the proposal from Task 7.3HD, is
 on the **My alerts** page (`/alerts.html`). When news breaks about a stock a signed-in
-user holds, they get a browser notification immediately, even with every StockWise tab
+user holds, they get a browser notification immediately, even with every UnderStock tab
 closed. Tapping it opens a plain-English explanation of what happened
 (`/news.html`), with one named analyst's reported words where the plan includes them.
 

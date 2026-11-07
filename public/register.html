@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Bui Duc Thinh">
-  <meta name="description" content="Create a StockWise account.">
-  <title>StockWise &mdash; Register</title>
+  <meta name="description" content="Create a UnderStock account.">
+  <title>UnderStock &mdash; Register</title>
 
   <!-- Enforces this page's own "nothing is uploaded" claim at the browser
        level, not just by not writing any upload code: connect-src 'none'
@@ -27,7 +27,7 @@
        jsDelivr were ever compromised or served a tampered file, the browser
        refuses to apply it rather than silently running altered CSS. (This
        hash is specific to this page; the same two CDN tags are unprotected
-       on StockWise's other pages - out of scope for this task's feature,
+       on UnderStock's other pages - out of scope for this task's feature,
        but a real gap worth fixing site-wide separately.) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -51,10 +51,10 @@
       <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
 
         <!-- The brand name is a text hyperlink back to the home page -->
-        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+        <a class="brand-name text-white text-decoration-none" href="index.html">UnderStock</a>
 
         <form class="d-flex" role="search" action="search.html" method="get">
-          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <label class="visually-hidden" for="siteSearch">Search UnderStock</label>
           <input class="form-control me-2" type="search" id="siteSearch" name="q"
             placeholder="Search explanations and guides">
           <button class="btn btn-primary" type="submit">Search</button>
@@ -209,7 +209,7 @@
              Import your holdings (SIT774 Task 10.3HD, implementing the
              Task 7.3HD proposal). A working prototype: a broker statement
              (CSV or PDF) is read and parsed entirely in this browser - the
-             file is never uploaded, and StockWise never connects to a
+             file is never uploaded, and UnderStock never connects to a
              trading account. Manual entry (the "Add a holding" button) and
              import both feed the same review table below, so nothing here
              replaces manual entry, it sits beside it, exactly as proposed.
@@ -289,7 +289,7 @@
         </fieldset>
 
         <!-- These answers decide which explanations we show first. They are not
-             used to recommend anything, because StockWise does not make
+             used to recommend anything, because UnderStock does not make
              recommendations. -->
         <fieldset class="mb-4">
           <legend class="h5">What we should explain first</legend>
@@ -358,20 +358,20 @@
 
         <!-- Consent is itemised rather than bundled into one "I agree", and each
              item says exactly what it covers. These are data and privacy
-             permissions, which is what StockWise actually needs consent for. -->
+             permissions, which is what UnderStock actually needs consent for. -->
         <fieldset class="mb-4">
           <legend class="h5">Permissions</legend>
           <div class="form-check mb-2">
             <input class="form-check-input" type="checkbox" id="holdings" name="holdings" value="yes">
             <label class="form-check-label" for="holdings">
-              StockWise may store the list of holdings I enter, so it can explain them. Read-only:
-              StockWise is never connected to a trading account and cannot place a trade.
+              UnderStock may store the list of holdings I enter, so it can explain them. Read-only:
+              UnderStock is never connected to a trading account and cannot place a trade.
             </label>
           </div>
           <div class="form-check mb-2">
             <input class="form-check-input" type="checkbox" id="ordering" name="ordering" value="yes">
             <label class="form-check-label" for="ordering">
-              StockWise may use my answers above to decide which explanations to show me first.
+              UnderStock may use my answers above to decide which explanations to show me first.
             </label>
           </div>
           <div class="form-check mb-2">
@@ -383,7 +383,7 @@
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="terms" name="terms" value="yes" required>
             <label class="form-check-label" for="terms">
-              <span class="required-marker" aria-hidden="true">*</span> I understand StockWise gives factual information and general explanations only,
+              <span class="required-marker" aria-hidden="true">*</span> I understand UnderStock gives factual information and general explanations only,
               and does not tell me what to buy, sell or hold.
             </label>
           </div>
@@ -414,11 +414,11 @@
         <div class="col-md-4">
           <h2 class="h6 text-uppercase">Contact us</h2>
           <address class="mb-0">
-            StockWise Pty Ltd<br>
+            UnderStock Pty Ltd<br>
             221 Burwood Highway<br>
             Burwood VIC 3125, Australia<br>
             Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
-            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+            Email: <a href="mailto:hello@understock.example.com">hello@understock.example.com</a>
           </address>
         </div>
 
@@ -451,7 +451,7 @@
 
       <hr>
       <p class="mb-0 small text-center">
-        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        &copy; 2026 UnderStock Pty Ltd. UnderStock provides factual information and general
         explanations only. We do not provide personal financial product advice and we do not
         recommend buying, selling or holding any investment.
       </p>

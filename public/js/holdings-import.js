@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - "Import your holdings" feature
+   UnderStock - "Import your holdings" feature
    SIT774 Task 10.3HD (implementing the Task 7.3HD proposal)
 
    Reads a broker statement (CSV or PDF) entirely in the browser - nothing is
@@ -145,7 +145,7 @@ if (typeof document !== 'undefined') {
       var isCsv = file.type === 'text/csv' || /\.csv$/i.test(file.name);
 
       if (!isPdf && !isCsv) {
-        showImportError('Please choose a .csv or .pdf file. StockWise only reads these two formats locally, in your browser.');
+        showImportError('Please choose a .csv or .pdf file. UnderStock only reads these two formats locally, in your browser.');
         return;
       }
 
@@ -461,7 +461,7 @@ if (typeof document !== 'undefined') {
           input.setAttribute('aria-invalid', String(invalid));
         });
       } else {
-        // "Parsed", not "Included": this only means the checks StockWise
+        // "Parsed", not "Included": this only means the checks UnderStock
         // runs found nothing wrong, not that the row is guaranteed
         // correct - especially for a PDF, where there is no structure to
         // check against beyond column count and simple name/number shape.
@@ -515,7 +515,7 @@ if (typeof document !== 'undefined') {
 
     // --- Save (Step 4 of the proposal): nothing is added to the account
     // until this point. This is a working front-end prototype of the
-    // staged-confirmation step - StockWise's register form has no backend
+    // staged-confirmation step - UnderStock's register form has no backend
     // holdings storage yet, so this demonstrates the interaction itself:
     // the moment past which rows are treated as confirmed, matching what
     // the manual-entry consent checkboxes already on this page govern. -----

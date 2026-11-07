@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - holdings import parsing worker
+   UnderStock - holdings import parsing worker
    SIT774 Task 10.3HD (implementing the Task 7.3HD "Import your holdings"
    proposal)
 

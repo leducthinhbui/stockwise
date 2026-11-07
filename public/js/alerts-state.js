@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - Portfolio News Alerts, the permission state function
+   UnderStock - Portfolio News Alerts, the permission state function
    SIT774 Task 10.3HD
 
    The page's whole behaviour for "turn alerts on" comes down to one

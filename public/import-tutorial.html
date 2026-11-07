@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Bui Duc Thinh">
-  <meta name="description" content="How StockWise's Import your holdings feature reads CSV and PDF statements locally, in the browser, using the File System Access API, a Web Worker and pdf.js.">
-  <title>StockWise &mdash; Building &ldquo;Import your holdings&rdquo;</title>
+  <meta name="description" content="How UnderStock's Import your holdings feature reads CSV and PDF statements locally, in the browser, using the File System Access API, a Web Worker and pdf.js.">
+  <title>UnderStock &mdash; Building &ldquo;Import your holdings&rdquo;</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
@@ -19,9 +19,9 @@
   <header>
     <div class="utility-bar text-white py-3">
       <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <a class="brand-name text-white text-decoration-none" href="index.html">StockWise</a>
+        <a class="brand-name text-white text-decoration-none" href="index.html">UnderStock</a>
         <form class="d-flex" role="search" action="search.html" method="get">
-          <label class="visually-hidden" for="siteSearch">Search StockWise</label>
+          <label class="visually-hidden" for="siteSearch">Search UnderStock</label>
           <input class="form-control me-2" type="search" id="siteSearch" name="q"
             placeholder="Search explanations and guides">
           <button class="btn btn-primary" type="submit">Search</button>
@@ -74,9 +74,9 @@
 
       <h2>The problem this solves</h2>
       <p>
-        StockWise's Register page promises it is <strong>read&#8209;only</strong>: it never connects to a
+        UnderStock's Register page promises it is <strong>read&#8209;only</strong>: it never connects to a
         trading account. That rules out the obvious shortcut &mdash; a &ldquo;Connect your broker&rdquo;
-        button using an API or OAuth flow &mdash; since that would mean StockWise holding an access token
+        button using an API or OAuth flow &mdash; since that would mean UnderStock holding an access token
         and an ongoing connection to a live financial account. The alternative is to let the user supply
         the statement their broker already gives them (a CSV or PDF export) and read it
         <strong>locally</strong>, so the file, and anything extracted from it, never has to leave the
@@ -132,7 +132,7 @@
         the File System Access API for this feature, it degrades to the fallback in every browser that
         lacks it, and holding onto the handle is the natural next step for a feature this prototype does
         not yet have &mdash; re-importing next month's statement without a fresh file picker, once
-        StockWise has somewhere to persist that handle across a session.
+        UnderStock has somewhere to persist that handle across a session.
       </p>
 
       <h2>Why parsing happens in a Web Worker</h2>
@@ -258,7 +258,7 @@ worker.addEventListener('message', function (event) {
       </p>
       <p>
         Clicking <strong>Save holdings</strong> is the only point past which rows are treated as
-        confirmed. StockWise's register form has no backend holdings storage yet, so this demonstrates
+        confirmed. UnderStock's register form has no backend holdings storage yet, so this demonstrates
         the interaction itself: the moment nothing can be auto-committed past, matching what the
         page's existing consent checkboxes already govern for manually-typed holdings.
       </p>
@@ -326,11 +326,11 @@ worker.addEventListener('message', function (event) {
         <div class="col-md-4">
           <h2 class="h6 text-uppercase">Contact us</h2>
           <address class="mb-0">
-            StockWise Pty Ltd<br>
+            UnderStock Pty Ltd<br>
             221 Burwood Highway<br>
             Burwood VIC 3125, Australia<br>
             Phone: <a href="tel:+61390001234">(03) 9000 1234</a><br>
-            Email: <a href="mailto:hello@stockwise.example.com">hello@stockwise.example.com</a>
+            Email: <a href="mailto:hello@understock.example.com">hello@understock.example.com</a>
           </address>
         </div>
         <div class="col-md-4">
@@ -359,7 +359,7 @@ worker.addEventListener('message', function (event) {
       </div>
       <hr>
       <p class="mb-0 small text-center">
-        &copy; 2026 StockWise Pty Ltd. StockWise provides factual information and general
+        &copy; 2026 UnderStock Pty Ltd. UnderStock provides factual information and general
         explanations only. We do not provide personal financial product advice and we do not
         recommend buying, selling or holding any investment.
       </p>

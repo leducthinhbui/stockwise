@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - administrator review of contact-form queries
+   UnderStock - administrator review of contact-form queries
    SIT774 Task 10.2D (Website Project, Part 3 - database integration)
 
    Loads queries.html's table from GET /api/queries, re-fetching whenever the

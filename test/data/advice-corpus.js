@@ -1,7 +1,7 @@
 // test/data/advice-corpus.js
 // SIT774 Task 10.3HD - labelled sentences for evaluating lib/guardrail.js.
 //
-// The guardrail's job is to catch StockWise-written explanation text that
+// The guardrail's job is to catch UnderStock-written explanation text that
 // breaks the site's own rule: explain what happened, never recommend, forecast,
 // judge, or pressure. Two sets, so the result is not flattering itself:
 //

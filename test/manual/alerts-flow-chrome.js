@@ -97,7 +97,7 @@ const show = (label, obj) => console.log('\n== ' + label + '\n' + JSON.stringify
   await sleep(800);
   const reg = regs.find((r) => r.scopeURL.startsWith(ORIGIN));
   if (reg) {
-    const generic = JSON.stringify({ title: 'StockWise', body: "There's news about one of your holdings.", newsId: 1, tag: 'stockwise-news-1' });
+    const generic = JSON.stringify({ title: 'UnderStock', body: "There's news about one of your holdings.", newsId: 1, tag: 'understock-news-1' });
     await cdp.send('ServiceWorker.deliverPushMessage', { origin: ORIGIN, registrationId: reg.registrationId, data: generic });
     await sleep(800);
     show('A3. generic push delivered to sw.js: what the browser is showing', (await read(page)).notifications);

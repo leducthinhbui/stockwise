@@ -1,16 +1,16 @@
 /* ==========================================================================
-   StockWise - service worker for Portfolio News Alerts
+   UnderStock - service worker for Portfolio News Alerts
    SIT774 Task 10.3HD (implementing the Task 7.3HD proposal)
 
    A service worker is a script the browser keeps alive in the background,
    separate from any page. That is what makes the feature work with every
-   StockWise tab closed: the browser's push service wakes this worker, the
+   UnderStock tab closed: the browser's push service wakes this worker, the
    worker shows the notification, and the page does not need to exist.
 
    It does three small jobs:
      1. 'push'              - show the notification the server sent
      2. 'notificationclick' - open (or focus) the explanation page
-     3. tell any open StockWise tab to refresh its "For your portfolio" list
+     3. tell any open UnderStock tab to refresh its "For your portfolio" list
 
    It is served from the site root (/sw.js) so its scope covers the whole
    site. The page registers it in js/alerts.js.
@@ -40,12 +40,12 @@ self.addEventListener('push', function (event) {
     data = {}; // an unreadable payload still gets a generic, safe notification
   }
 
-  var title = data.title || 'StockWise';
+  var title = data.title || 'UnderStock';
   var options = {
     body: data.body || "There's news about one of your holdings.",
     // Same tag means a repeat of the same item replaces the earlier
     // notification instead of stacking a second one.
-    tag: data.tag || 'stockwise-news',
+    tag: data.tag || 'understock-news',
     // Keep the alert on screen until the person acts on it. In testing on macOS
     // Chrome, without this the alert was sometimes replaced by Chrome's generic
     // "This site has been updated in the background" message, or did not appear;
@@ -63,7 +63,7 @@ self.addEventListener('push', function (event) {
       // Browsers require every push to show a notification (userVisibleOnly),
       // so this always runs.
       self.registration.showNotification(title, options),
-      // If a StockWise tab is open, let it refresh its in-app list too.
+      // If a UnderStock tab is open, let it refresh its in-app list too.
       self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clients) {
         clients.forEach(function (client) {
           client.postMessage({ type: 'news-pushed' });
@@ -74,7 +74,7 @@ self.addEventListener('push', function (event) {
 });
 
 // The user tapped the notification. Open the explanation page, reusing an
-// existing StockWise tab if there is one.
+// existing UnderStock tab if there is one.
 self.addEventListener('notificationclick', function (event) {
   event.notification.close();
 

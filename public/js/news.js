@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - news explanation page
+   UnderStock - news explanation page
    SIT774 Task 10.3HD (implementing the Task 7.3HD proposal)
 
    Runs on news.html, the page a notification opens. It asks the server for
@@ -80,7 +80,7 @@
 
       status.classList.add('d-none');
       article.classList.remove('d-none');
-      document.title = 'StockWise — ' + item.headline;
+      document.title = 'UnderStock — ' + item.headline;
       $('headline').setAttribute('tabindex', '-1');
       $('headline').focus(); // the notification opened this page: start at the news
     })

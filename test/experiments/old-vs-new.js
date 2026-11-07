@@ -97,10 +97,10 @@ function takeoverResult(save) {
 // The first draft: the whole headline goes into the notification text.
 function buildPushPayloadV1(prefs, item) {
   return {
-    title: 'StockWise',
+    title: 'UnderStock',
     body: prefs.showOnLockScreen ? `${item.ticker}: ${item.headline}` : alerts.GENERIC_BODY,
     newsId: item.id,
-    tag: `stockwise-news-${item.id}`
+    tag: `understock-news-${item.id}`
   };
 }
 

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StockWise - Portfolio News Alerts, page logic
+   UnderStock - Portfolio News Alerts, page logic
    SIT774 Task 10.3HD (implementing the Task 7.3HD proposal)
 
    Runs on alerts.html. It does five things:
@@ -335,7 +335,7 @@
   var MESSAGES = {
     off: ['alert-secondary', 'Alerts are off. Nothing is sent to this browser.'],
     active: ['alert-success', 'Alerts are on for this browser. You will be notified as soon as there is news about a holding.'],
-    blocked: ['alert-warning', 'Notifications for StockWise are blocked in your browser. Look for a site permissions or site settings option near the address bar to allow them. Your choice here is saved, so alerts start as soon as you allow them.'],
+    blocked: ['alert-warning', 'Notifications for UnderStock are blocked in your browser. Look for a site permissions or site settings option near the address bar to allow them. Your choice here is saved, so alerts start as soon as you allow them.'],
     failed: ['alert-warning', 'We could not finish turning on alerts. That is on our side, not your browser. Please try again.'],
     unsupported: ['alert-info', 'This browser cannot show push notifications. Your alerts will still appear in the list under "For your portfolio" below.'],
     'needs-permission': ['alert-info', 'Alerts are saved as on, but this browser has not been asked yet. Tick the box to allow notifications.']
@@ -476,7 +476,7 @@
     el.privacyBody.appendChild(row(
       'Notify me immediately',
       STATUS_TEXT[mode],
-      'Lets StockWise send a notification to this browser when there is news about a holding. Turning it off deletes the stored push subscription.'
+      'Lets UnderStock send a notification to this browser when there is news about a holding. Turning it off deletes the stored push subscription.'
     ));
     el.privacyBody.appendChild(row(
       "Show the holding's name on my lock screen",

@@ -1,7 +1,7 @@
 {
-  "name": "task05-2d-stockwise-website",
+  "name": "task05-2d-understock-website",
   "version": "1.0.0",
-  "description": "StockWise: Tasks 10.2D (database integration) and 10.3HD (Portfolio News Alerts)",
+  "description": "UnderStock: Tasks 10.2D (database integration) and 10.3HD (Portfolio News Alerts)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

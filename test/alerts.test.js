@@ -6,7 +6,7 @@
 // are checked by the code rather than only asserted in prose.
 //
 // Run with: npm test   (uses Node's built-in test runner and an in-memory
-// SQLite database, so it never touches stockwise.db)
+// SQLite database, so it never touches understock.db)
 
 'use strict';
 
